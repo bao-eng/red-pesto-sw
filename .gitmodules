@@ -1,0 +1,3 @@
+[submodule "BMA456-Sensor-API"]
+	path = BMA456-Sensor-API
+	url = https://github.com/boschsensortec/BMA456-Sensor-API.git
