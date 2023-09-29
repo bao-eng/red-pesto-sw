@@ -15,7 +15,15 @@ pico_sdk_init()
 # Tell CMake where to find the executable source file
 add_executable(${PROJECT_NAME} 
     main.c
+    BMA456-Sensor-API/bma4.c
+    BMA456-Sensor-API/bma4.h
+    BMA456-Sensor-API/bma456_an.c
+    BMA456-Sensor-API/bma456_an.h
+    bma456-rp2040/common.c
+    bma456-rp2040/common.h
 )
+
+target_include_directories(${PROJECT_NAME}  PRIVATE BMA456-Sensor-API bma456-rp2040)
 
 # Create map/bin/hex/uf2 files
 pico_add_extra_outputs(${PROJECT_NAME})
@@ -30,3 +38,8 @@ target_link_libraries(${PROJECT_NAME}
 # Enable usb output, disable uart output
 pico_enable_stdio_usb(${PROJECT_NAME} 0)
 pico_enable_stdio_uart(${PROJECT_NAME} 1)
+
+IF(CMAKE_COMPILER_IS_GNUCC)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
+ENDIF(CMAKE_COMPILER_IS_GNUCC)
