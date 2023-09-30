@@ -17,10 +17,10 @@ add_executable(${PROJECT_NAME}
     main.c
     BMA456-Sensor-API/bma4.c
     BMA456-Sensor-API/bma4.h
-    BMA456-Sensor-API/bma456_an.c
-    BMA456-Sensor-API/bma456_an.h
-    bma456-rp2040/common.c
-    bma456-rp2040/common.h
+    BMA456-Sensor-API/bma456.c
+    BMA456-Sensor-API/bma456.h
+    # bma456-rp2040/common.c
+    # bma456-rp2040/common.h
 )
 
 target_include_directories(${PROJECT_NAME}  PRIVATE BMA456-Sensor-API bma456-rp2040)
