@@ -238,12 +238,13 @@ enum bq256xx_id {
  * @watchdog_timer: watchdog timer value in milliseconds
  */
 struct bq256xx_device {
-	i2c_inst_t i2c;
+	i2c_inst_t *i2c;
 	uint8_t dev_addr;
 	char model_name[I2C_NAME_SIZE];
 	struct bq256xx_init_data init_data;
 	const struct bq256xx_chip_info *chip_info;
 	struct bq256xx_state state;
+	int watchdog_timer;
 };
 
 /**
@@ -279,7 +280,7 @@ struct bq256xx_device {
  *
  * @has_usb_detect: indicates whether device has BC1.2 detection
  */
-struct bq256xx_chip_info {
+typedef struct bq256xx_chip_info {
 	int model_id;
 
 	const struct regmap_config *bq256xx_regmap_config;
@@ -427,12 +428,12 @@ static int bq256xx_get_state(struct bq256xx_device *bq,
 	unsigned int charger_status_1;
 	int ret;
 
-	ret = regmap_read(&bq->i2c, bq->dev_addr, BQ256XX_CHARGER_STATUS_0,
+	ret = regmap_read(bq->i2c, bq->dev_addr, BQ256XX_CHARGER_STATUS_0,
 						&charger_status_0);
 	if (ret)
 		return ret;
 
-	ret = regmap_read(&bq->i2c, bq->dev_addr, BQ256XX_CHARGER_STATUS_1,
+	ret = regmap_read(bq->i2c, bq->dev_addr, BQ256XX_CHARGER_STATUS_1,
 						&charger_status_1);
 	if (ret)
 		return ret;
@@ -453,7 +454,7 @@ static int bq256xx_set_charge_type(struct bq256xx_device *bq, int type)
 {
 	int chg_config = 0;
 
-	return regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_CHARGER_CONTROL_0,
+	return regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_CHARGER_CONTROL_0,
 				BQ256XX_CHG_CONFIG_MASK,
 				(chg_config ? 1 : 0) << BQ256XX_CHG_CONFIG_BIT_SHIFT);
 }
@@ -464,7 +465,7 @@ static int bq256xx_get_ichg_curr(struct bq256xx_device *bq)
 	unsigned int ichg_reg_code;
 	int ret;
 
-	ret = regmap_read(&bq->i2c, bq->dev_addr, BQ256XX_CHARGE_CURRENT_LIMIT,
+	ret = regmap_read(bq->i2c, bq->dev_addr, BQ256XX_CHARGE_CURRENT_LIMIT,
 						&charge_current_limit);
 	if (ret)
 		return ret;
@@ -480,7 +481,7 @@ static int bq25618_619_get_ichg_curr(struct bq256xx_device *bq)
 	unsigned int ichg_reg_code;
 	int ret;
 
-	ret = regmap_read(&bq->i2c, bq->dev_addr, BQ256XX_CHARGE_CURRENT_LIMIT,
+	ret = regmap_read(bq->i2c, bq->dev_addr, BQ256XX_CHARGE_CURRENT_LIMIT,
 						&charge_current_limit);
 	if (ret)
 		return ret;
@@ -501,7 +502,7 @@ static int bq256xx_set_ichg_curr(struct bq256xx_device *bq, int ichg)
 	ichg = CLAMP(ichg, BQ256XX_ICHG_MIN_uA, ichg_max);
 	ichg_reg_code = ichg / BQ256XX_ICHG_STEP_uA;
 
-	return regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_CHARGE_CURRENT_LIMIT,
+	return regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_CHARGE_CURRENT_LIMIT,
 					BQ256XX_ICHG_MASK, ichg_reg_code);
 }
 
@@ -520,7 +521,7 @@ static int bq25618_619_set_ichg_curr(struct bq256xx_device *bq, int ichg)
 			bq25618_619_ichg_values) + BQ25618_ICHG_THRESH;
 	}
 
-	return regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_CHARGE_CURRENT_LIMIT,
+	return regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_CHARGE_CURRENT_LIMIT,
 					BQ256XX_ICHG_MASK, ichg_reg_code);
 }
 
@@ -530,7 +531,7 @@ static int bq25618_619_get_chrg_volt(struct bq256xx_device *bq)
 	unsigned int vbatreg_reg_code;
 	int ret;
 
-	ret = regmap_read(&bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
+	ret = regmap_read(bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
 							&battery_volt_lim);
 
 	if (ret)
@@ -553,7 +554,7 @@ static int bq25611d_get_chrg_volt(struct bq256xx_device *bq)
 	unsigned int vbatreg_reg_code;
 	int ret;
 
-	ret = regmap_read(&bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
+	ret = regmap_read(bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
 							&battery_volt_lim);
 	if (ret)
 		return ret;
@@ -575,7 +576,7 @@ static int bq2560x_get_chrg_volt(struct bq256xx_device *bq)
 	unsigned int vbatreg_reg_code;
 	int ret;
 
-	ret = regmap_read(&bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
+	ret = regmap_read(bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
 							&battery_volt_lim);
 	if (ret)
 		return ret;
@@ -593,7 +594,7 @@ static int bq25601d_get_chrg_volt(struct bq256xx_device *bq)
 	unsigned int vbatreg_reg_code;
 	int ret;
 
-	ret = regmap_read(&bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
+	ret = regmap_read(bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
 							&battery_volt_lim);
 	if (ret)
 		return ret;
@@ -622,7 +623,7 @@ static int bq25618_619_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
 						bq25618_619_vbatreg_values);
 	}
 
-	return regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
+	return regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
 				BQ256XX_VBATREG_MASK, vbatreg_reg_code <<
 						BQ256XX_VBATREG_BIT_SHIFT);
 }
@@ -644,7 +645,7 @@ static int bq25611d_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
 						bq25611d_vbatreg_values);
 	}
 
-	return regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
+	return regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
 				BQ256XX_VBATREG_MASK, vbatreg_reg_code <<
 						BQ256XX_VBATREG_BIT_SHIFT);
 }
@@ -659,7 +660,7 @@ static int bq2560x_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
 	vbatreg_reg_code = (vbatreg - BQ2560X_VBATREG_OFFSET_uV) /
 						BQ2560X_VBATREG_STEP_uV;
 
-	return regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
+	return regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
 				BQ256XX_VBATREG_MASK, vbatreg_reg_code <<
 						BQ256XX_VBATREG_BIT_SHIFT);
 }
@@ -674,14 +675,14 @@ static int bq25601d_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
 	vbatreg_reg_code = (vbatreg - BQ25601D_VBATREG_OFFSET_uV) /
 						BQ2560X_VBATREG_STEP_uV;
 
-	return regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
+	return regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_BATTERY_VOLTAGE_LIMIT,
 				BQ256XX_VBATREG_MASK, vbatreg_reg_code <<
 						BQ256XX_VBATREG_BIT_SHIFT);
 }
 
 static int bq256xx_set_ts_ignore(struct bq256xx_device *bq, bool ts_ignore)
 {
-	return regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_INPUT_CURRENT_LIMIT,
+	return regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_INPUT_CURRENT_LIMIT,
 				BQ256XX_TS_IGNORE, (ts_ignore ? 1 : 0) << BQ256XX_TS_IGNORE_SHIFT);
 }
 
@@ -691,7 +692,7 @@ static int bq256xx_get_prechrg_curr(struct bq256xx_device *bq)
 	unsigned int iprechg_reg_code;
 	int ret;
 
-	ret = regmap_read(&bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
+	ret = regmap_read(bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
 						&prechg_and_term_curr_lim);
 	if (ret)
 		return ret;
@@ -713,7 +714,7 @@ static int bq256xx_set_prechrg_curr(struct bq256xx_device *bq, int iprechg)
 	iprechg_reg_code = ((iprechg - BQ256XX_IPRECHG_OFFSET_uA) /
 			BQ256XX_IPRECHG_STEP_uA) << BQ256XX_IPRECHG_BIT_SHIFT;
 
-	return regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
+	return regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
 				BQ256XX_IPRECHG_MASK, iprechg_reg_code);
 }
 
@@ -723,7 +724,7 @@ static int bq25618_619_get_prechrg_curr(struct bq256xx_device *bq)
 	unsigned int iprechg_reg_code;
 	int ret;
 
-	ret = regmap_read(&bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
+	ret = regmap_read(bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
 						&prechg_and_term_curr_lim);
 	if (ret)
 		return ret;
@@ -745,7 +746,7 @@ static int bq25618_619_set_prechrg_curr(struct bq256xx_device *bq, int iprechg)
 	iprechg_reg_code = ((iprechg - BQ25618_IPRECHG_OFFSET_uA) /
 			BQ25618_IPRECHG_STEP_uA) << BQ256XX_IPRECHG_BIT_SHIFT;
 
-	return regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
+	return regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
 				BQ256XX_IPRECHG_MASK, iprechg_reg_code);
 }
 
@@ -755,7 +756,7 @@ static int bq256xx_get_term_curr(struct bq256xx_device *bq)
 	unsigned int iterm_reg_code;
 	int ret;
 
-	ret = regmap_read(&bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
+	ret = regmap_read(bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
 						&prechg_and_term_curr_lim);
 	if (ret)
 		return ret;
@@ -775,7 +776,7 @@ static int bq256xx_set_term_curr(struct bq256xx_device *bq, int iterm)
 	iterm_reg_code = (iterm - BQ256XX_ITERM_OFFSET_uA) /
 							BQ256XX_ITERM_STEP_uA;
 
-	return regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
+	return regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
 				BQ256XX_ITERM_MASK, iterm_reg_code);
 }
 
@@ -785,7 +786,7 @@ static int bq25618_619_get_term_curr(struct bq256xx_device *bq)
 	unsigned int iterm_reg_code;
 	int ret;
 
-	ret = regmap_read(&bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
+	ret = regmap_read(bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
 						&prechg_and_term_curr_lim);
 	if (ret)
 		return ret;
@@ -805,7 +806,7 @@ static int bq25618_619_set_term_curr(struct bq256xx_device *bq, int iterm)
 	iterm_reg_code = (iterm - BQ25618_ITERM_OFFSET_uA) /
 							BQ25618_ITERM_STEP_uA;
 
-	return regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
+	return regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
 				BQ256XX_ITERM_MASK, iterm_reg_code);
 }
 
@@ -815,7 +816,7 @@ static int bq256xx_get_input_volt_lim(struct bq256xx_device *bq)
 	unsigned int vindpm_reg_code;
 	int ret;
 
-	ret = regmap_read(&bq->i2c, bq->dev_addr, BQ256XX_CHARGER_CONTROL_2,
+	ret = regmap_read(bq->i2c, bq->dev_addr, BQ256XX_CHARGER_CONTROL_2,
 						&charger_control_2);
 	if (ret)
 		return ret;
@@ -835,7 +836,7 @@ static int bq256xx_set_input_volt_lim(struct bq256xx_device *bq, int vindpm)
 	vindpm_reg_code = (vindpm - BQ256XX_VINDPM_OFFSET_uV) /
 						BQ256XX_VINDPM_STEP_uV;
 
-	return regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_CHARGER_CONTROL_2,
+	return regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_CHARGER_CONTROL_2,
 					BQ256XX_VINDPM_MASK, vindpm_reg_code);
 }
 
@@ -845,7 +846,7 @@ static int bq256xx_get_input_curr_lim(struct bq256xx_device *bq)
 	unsigned int iindpm_reg_code;
 	int ret;
 
-	ret = regmap_read(&bq->i2c, bq->dev_addr, BQ256XX_INPUT_CURRENT_LIMIT,
+	ret = regmap_read(bq->i2c, bq->dev_addr, BQ256XX_INPUT_CURRENT_LIMIT,
 						&input_current_limit);
 	if (ret)
 		return ret;
@@ -865,7 +866,7 @@ static int bq256xx_set_input_curr_lim(struct bq256xx_device *bq, int iindpm)
 	iindpm_reg_code = (iindpm - BQ256XX_IINDPM_OFFSET_uA) /
 							BQ256XX_IINDPM_STEP_uA;
 
-	return regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_INPUT_CURRENT_LIMIT,
+	return regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_INPUT_CURRENT_LIMIT,
 					BQ256XX_IINDPM_MASK, iindpm_reg_code);
 }
 
