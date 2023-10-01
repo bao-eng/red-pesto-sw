@@ -20,7 +20,7 @@
        __typeof__ (b) _b = (b); \
      _a < _b ? _a : _b; })
 
-#define CLAMP(x, upper, lower) (MIN(upper, MAX(x, lower)))
+#define CLAMP(x, lower, upper) (MIN(upper, MAX(x, lower)))
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 #define BQ256XX_MANUFACTURER "Texas Instruments"
