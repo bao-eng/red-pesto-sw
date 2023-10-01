@@ -869,11 +869,9 @@ static int bq256xx_set_input_curr_lim(struct bq256xx_device *bq, int iindpm)
 					BQ256XX_IINDPM_MASK, iindpm_reg_code);
 }
 
-static void bq256xx_charger_reset(void *data)
+static void bq256xx_charger_reset(struct bq256xx_device *bq)
 {
-	struct bq256xx_device *bq = data;
-
-	regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_PART_INFORMATION,
+	regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_PART_INFORMATION,
 					BQ256XX_REG_RST, BQ256XX_REG_RST);
 }
 
