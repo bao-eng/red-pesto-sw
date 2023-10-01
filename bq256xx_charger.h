@@ -874,3 +874,59 @@ static void bq256xx_charger_reset(void *data)
 	regmap_update_bits(&bq->i2c, bq->dev_addr, BQ256XX_PART_INFORMATION,
 					BQ256XX_REG_RST, BQ256XX_REG_RST);
 }
+
+static int bq256xx_hw_init(struct bq256xx_device *bq)
+{
+	int wd_reg_val = BQ256XX_WATCHDOG_DIS;
+	int ret = 0;
+	int i;
+
+	for (i = 0; i < BQ256XX_NUM_WD_VAL; i++) {
+		if (bq->watchdog_timer == bq256xx_watchdog_time[i]) {
+			wd_reg_val = i;
+			break;
+		}
+		if (bq->watchdog_timer > bq256xx_watchdog_time[i] &&
+		    bq->watchdog_timer < bq256xx_watchdog_time[i + 1])
+			wd_reg_val = i;
+	}
+	ret = regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_CHARGER_CONTROL_1,
+				 BQ256XX_WATCHDOG_MASK, wd_reg_val <<
+						BQ256XX_WDT_BIT_SHIFT);
+
+	// ret = bq->chip_info->bq256xx_set_vindpm(bq, bq->init_data.vindpm);
+	// if (ret)
+	// 	return ret;
+
+	// ret = bq->chip_info->bq256xx_set_iindpm(bq, bq->init_data.iindpm);
+	// if (ret)
+	// 	return ret;
+
+	// ret = bq->chip_info->bq256xx_set_ichg(bq,
+	// 			bq->chip_info->bq256xx_def_ichg);
+	// if (ret)
+	// 	return ret;
+
+	// ret = bq->chip_info->bq256xx_set_iprechg(bq,
+	// 			bat_info->precharge_current_ua);
+	// if (ret)
+	// 	return ret;
+
+	// ret = bq->chip_info->bq256xx_set_vbatreg(bq,
+	// 			bq->chip_info->bq256xx_def_vbatreg);
+	// if (ret)
+	// 	return ret;
+
+	// ret = bq->chip_info->bq256xx_set_iterm(bq,
+	// 			bat_info->charge_term_current_ua);
+	// if (ret)
+	// 	return ret;
+
+	// if (bq->chip_info->bq256xx_set_ts_ignore) {
+	// 	ret = bq->chip_info->bq256xx_set_ts_ignore(bq, bq->init_data.ts_ignore);
+	// 	if (ret)
+	// 		return ret;
+	// }
+
+	return 0;
+}
