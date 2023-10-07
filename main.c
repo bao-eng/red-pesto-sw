@@ -80,7 +80,7 @@ int main() {
 
   easyscale_reset();
   while (true) {
-    for (size_t i = 0; i < 32; i++)
+    for (size_t i = 1; i < 32; i++)
     {
         easyscale_set_vfb(i,true);
         sleep_ms(1000);
