@@ -12,7 +12,7 @@
 #define SPI_CS 21
 #define INT1 17
 #define INT2 16
-#define LED 25
+#define LED 2
 
 #define READ_BIT 0x80
 
