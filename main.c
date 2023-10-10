@@ -1,6 +1,6 @@
 #include "pico/stdlib.h"
 
-#define EASYSCALE_PIN 1
+#define EASYSCALE_PIN 13
 #define TRESET 2500
 #define TSTART 50
 #define TH_LB_US 50
