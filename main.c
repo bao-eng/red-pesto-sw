@@ -73,6 +73,7 @@ int easyscale_set_vfb(uint8_t value, bool ack) {
 }
 
 int main() {
+  stdio_init_all();
   gpio_init(EASYSCALE_PIN);
   gpio_pull_up(EASYSCALE_PIN);
   gpio_set_dir(EASYSCALE_PIN, GPIO_OUT);
@@ -82,7 +83,8 @@ int main() {
   while (true) {
     for (size_t i = 1; i < 32; i++)
     {
-        easyscale_set_vfb(i,true);
+        printf("setting vfb: %d\n", i);
+        easyscale_set_vfb(i,false);
         sleep_ms(1000);
     }
   }
