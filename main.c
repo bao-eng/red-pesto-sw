@@ -7,8 +7,8 @@
 #include "pico/stdlib.h"
 
 #define I2C_INST i2c0
-#define I2C_SDA_PIN 20
-#define I2C_SCL_PIN 21
+#define I2C_SDA_PIN 24
+#define I2C_SCL_PIN 25
 #define CHRG_EN_PIN 10
 #define STATUS_PIN 16
 #define BQ_INT_PIN 11
