@@ -23,8 +23,8 @@ pico_add_extra_outputs(${PROJECT_NAME})
 # Link to pico_stdlib (gpio, time, etc. functions)
 target_link_libraries(${PROJECT_NAME} 
     pico_stdlib
-    #hardware_pwm
-    hardware_i2c
+    hardware_pwm
+    # hardware_i2c
 )
 
 # Enable usb output, disable uart output
