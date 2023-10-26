@@ -1,22 +1,42 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
+#include "pico/bootrom.h"
+
+#define EMBEDDED_CLI_IMPL
+#include "embedded_cli.h"
+
+static void writeCharToCli(EmbeddedCli *embeddedCli, char c) {
+    putchar_raw(c);
+}
+
+static void reboot2bootloader(EmbeddedCli *cli, char *args, void *context) {
+    reset_usb_boot(0, 0);
+}
 
 int main(){
-    //Initialise I/O
     stdio_init_all(); 
 
-    // initialise GPIO (Green LED connected to pin 25)
-    gpio_init(2);
-    gpio_set_dir(2, GPIO_OUT);
+    EmbeddedCliConfig *config = embeddedCliDefaultConfig();
+    config->maxBindingCount = 16;
+    EmbeddedCli *cli = embeddedCliNewDefault();
+    void writeChar(EmbeddedCli *embeddedCli, char c);
+    cli->writeChar = writeCharToCli;
+    char c = (char)getchar_timeout_us(100);
+    embeddedCliReceiveChar(cli, c);
+    CliCommandBinding binding =
+    {
+        "reset_usb_boot",
+        "Reboot the device into BOOTSEL mode",
+        false,
+        NULL,
+        reboot2bootloader
+    };
+    embeddedCliAddBinding(cli, binding);
 
-    //Main Loop 
     while(1){
-        gpio_put(2, 1); // Set pin 25 to high
-        printf("LED ON!\n");
-        sleep_ms(1000); // 0.5s delay
-
-        gpio_put(2, 0); // Set pin 25 to low
-        printf("LED OFF!\n");
-        sleep_ms(1000); // 0.5s delay
+      char c = (char)getchar_timeout_us(0);
+      embeddedCliReceiveChar(cli, c);
+      embeddedCliProcess(cli);
+      sleep_ms(100);
     }
 }
