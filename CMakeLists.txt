@@ -15,6 +15,7 @@ pico_sdk_init()
 # Tell CMake where to find the executable source file
 add_executable(${PROJECT_NAME} 
     main.c
+    embedded_cli.h
 )
 
 # Create map/bin/hex/uf2 files
