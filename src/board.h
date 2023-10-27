@@ -5,3 +5,5 @@
 #define INT1 17
 #define INT2 16
 #define LED 2
+#define LED_PIN 13
+#define BTN_PIN 9
