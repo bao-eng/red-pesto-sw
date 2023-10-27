@@ -15,8 +15,10 @@ pico_sdk_init()
 # Tell CMake where to find the executable source file
 add_executable(${PROJECT_NAME} 
     main.c
-    lis2dh12-pid/lis2dh12_reg.c
-    lis2dh12-pid/lis2dh12_reg.h
+    src/board.h
+    src/lis2dh12.h
+    src/lis2dh12-pid/lis2dh12_reg.c
+    src/lis2dh12-pid/lis2dh12_reg.h
 )
 
 # Create map/bin/hex/uf2 files
