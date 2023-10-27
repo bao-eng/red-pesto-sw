@@ -1,5 +1,6 @@
-#include "hardware/spi.h"
 #include "pico/stdlib.h"
+#include "hardware/spi.h"
+
 #include "board.h"
 #include "lis2dh12-pid/lis2dh12_reg.h"
 
@@ -39,7 +40,7 @@ int32_t platform_read(void *handle, uint8_t Reg, uint8_t *Bufp, uint16_t len) {
 }
 void platform_delay(uint32_t millisec) { busy_wait_ms(millisec); }
 
-void init_lis2dh12(gpio_irq_callback_t callback){
+void red_pesto_lis2dh12_init(gpio_irq_callback_t callback){
   spi_init(spi0, 500 * 1000);
   spi_set_format(spi0,  // SPI instance
                  8,     // Number of bits per transfer
