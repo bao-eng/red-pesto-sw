@@ -19,6 +19,7 @@ add_executable(${PROJECT_NAME}
     src/lis2dh12.h
     src/lis2dh12-pid/lis2dh12_reg.c
     src/lis2dh12-pid/lis2dh12_reg.h
+    src/pwm.h
 )
 
 # Create map/bin/hex/uf2 files
@@ -28,6 +29,7 @@ pico_add_extra_outputs(${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} 
     pico_stdlib
     hardware_spi
+    hardware_pwm
 )
 
 # Enable usb output, disable uart output
