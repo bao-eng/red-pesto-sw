@@ -20,6 +20,7 @@ add_executable(${PROJECT_NAME}
     src/lis2dh12-pid/lis2dh12_reg.c
     src/lis2dh12-pid/lis2dh12_reg.h
     src/pwm.h
+    src/gpio.h
 )
 
 # Create map/bin/hex/uf2 files
