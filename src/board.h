@@ -4,6 +4,7 @@
 #define SPI_CS 21
 #define INT1 17
 #define INT2 16
-#define LED 2
-#define LED_PIN 13
+#define LED_GREEN 2
+#define LED_RED 3
+#define LED_POWER 13
 #define BTN_PIN 9

@@ -4,11 +4,11 @@
 #include "board.h"
 
 void red_pesto_pwm_init(){
-  gpio_set_function(LED_PIN, GPIO_FUNC_PWM);
+  gpio_set_function(LED_POWER, GPIO_FUNC_PWM);
 
-  uint slice_num = pwm_gpio_to_slice_num(LED_PIN);
+  uint slice_num = pwm_gpio_to_slice_num(LED_POWER);
   pwm_config config = pwm_get_default_config();
   pwm_init(slice_num, &config, true);
   pwm_set_wrap(slice_num, 6400);
-  pwm_set_gpio_level(LED_PIN, 0);
+  pwm_set_gpio_level(LED_POWER, 0);
 }
