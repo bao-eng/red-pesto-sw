@@ -24,6 +24,8 @@ add_executable(${PROJECT_NAME}
     src/bq256xx_charger.h
     src/adc.h
     src/i2c.h
+    src/cli.h
+    src/embedded_cli.h
 )
 
 # Create map/bin/hex/uf2 files
@@ -39,8 +41,8 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # Enable usb output, disable uart output
-pico_enable_stdio_usb(${PROJECT_NAME} 0)
-pico_enable_stdio_uart(${PROJECT_NAME} 1)
+pico_enable_stdio_usb(${PROJECT_NAME} 1)
+pico_enable_stdio_uart(${PROJECT_NAME} 0)
 
 IF(CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0 -Wall")
