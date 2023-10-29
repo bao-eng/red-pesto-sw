@@ -10,29 +10,29 @@ void red_pesto_gpio_init(gpio_irq_callback_t callback){
                  1,     // Polarity (CPOL)
                  1,     // Phase (CPHA)
                  SPI_MSB_FIRST);
-  gpio_set_function(SPI_MISO, GPIO_FUNC_SPI);
-  gpio_set_function(SPI_CLK, GPIO_FUNC_SPI);
-  gpio_set_function(SPI_MOSI, GPIO_FUNC_SPI);
-  gpio_pull_up(SPI_CS);
+  gpio_set_function(SPI_MISO_PIN, GPIO_FUNC_SPI);
+  gpio_set_function(SPI_CLK_PIN, GPIO_FUNC_SPI);
+  gpio_set_function(SPI_MOSI_PIN, GPIO_FUNC_SPI);
+  gpio_pull_up(SPI_CS_PIN);
 
-  gpio_init(LED_GREEN);
-  gpio_set_dir(LED_GREEN, GPIO_OUT);
-  gpio_put(LED_GREEN, 0);
+  gpio_init(LED_GREEN_PIN);
+  gpio_set_dir(LED_GREEN_PIN, GPIO_OUT);
+  gpio_put(LED_GREEN_PIN, 0);
 
   // Chip select is active-low, so we'll initialise it to a driven-high state
-  gpio_init(SPI_CS);
-  gpio_set_dir(SPI_CS, GPIO_OUT);
-  gpio_put(SPI_CS, 1);
+  gpio_init(SPI_CS_PIN);
+  gpio_set_dir(SPI_CS_PIN, GPIO_OUT);
+  gpio_put(SPI_CS_PIN, 1);
 
-  gpio_init(INT1);
-  gpio_set_dir(INT1, GPIO_IN);
-  gpio_pull_up(INT1);
-  gpio_set_irq_enabled_with_callback(INT1, GPIO_IRQ_EDGE_RISE, true,
+  gpio_init(INT1_PIN);
+  gpio_set_dir(INT1_PIN, GPIO_IN);
+  gpio_pull_up(INT1_PIN);
+  gpio_set_irq_enabled_with_callback(INT1_PIN, GPIO_IRQ_EDGE_RISE, true,
                                      callback);
 
-  gpio_init(INT2);
-  gpio_set_dir(INT2, GPIO_IN);
-  gpio_pull_up(INT2);
+  gpio_init(INT2_PIN);
+  gpio_set_dir(INT2_PIN, GPIO_IN);
+  gpio_pull_up(INT2_PIN);
   gpio_set_irq_enabled_with_callback(
-      INT2, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true, callback);
+      INT2_PIN, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true, callback);
 }

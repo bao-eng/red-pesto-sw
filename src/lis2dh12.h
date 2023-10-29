@@ -13,10 +13,10 @@
 stmdev_ctx_t dev_ctx; /** xxxxxxx is the used part number **/
 
 static inline void cs_select() {
-  gpio_put(SPI_CS, 0);  // Active low
+  gpio_put(SPI_CS_PIN, 0);  // Active low
 }
 
-static inline void cs_deselect() { gpio_put(SPI_CS, 1); }
+static inline void cs_deselect() { gpio_put(SPI_CS_PIN, 1); }
 
 int32_t platform_write(void *handle, uint8_t Reg, const uint8_t *Bufp,
                        uint16_t len) {

@@ -8,19 +8,19 @@
 
 void gpio_callback(uint gpio, uint32_t events) {
   static int int_count = 0;
-  if (gpio == INT1 && events == GPIO_IRQ_EDGE_RISE) {
-    gpio_put(LED_GREEN, !gpio_get(LED_GREEN));
+  if (gpio == INT1_PIN && events == GPIO_IRQ_EDGE_RISE) {
+    gpio_put(LED_GREEN_PIN, !gpio_get(LED_GREEN_PIN));
     int16_t data_raw_acceleration[3];
     lis2dh12_acceleration_raw_get(&dev_ctx, data_raw_acceleration);
   }
-  if (gpio == INT2) {
+  if (gpio == INT2_PIN) {
     printf("INT2 :%d ", int_count);
     if (events == GPIO_IRQ_EDGE_FALL) {
       printf("sleep->wake\n");
-      pwm_set_gpio_level(LED_POWER, 100);
+      pwm_set_gpio_level(LED_POWER_PIN, 100);
     } else if (events == GPIO_IRQ_EDGE_RISE) {
       printf("wake->sleep\n");
-      pwm_set_gpio_level(LED_POWER, 0);
+      pwm_set_gpio_level(LED_POWER_PIN, 0);
     }
     int_count++;
   }
