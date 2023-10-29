@@ -8,6 +8,7 @@
 #include "src/adc.h"
 #include "src/i2c.h"
 #include "src/bq256xx_charger.h"
+#include "src/cli.h"
 
 #define VRD_USB_MIN 0.25f
 #define VRD_USB_MAX 0.61f
@@ -55,6 +56,7 @@ int main() {
   red_pesto_pwm_init();
   red_pesto_adc_init();
   red_pesto_i2c_init();
+  red_pesto_init_cli();
 
   bq256xx_charger_reset(&bq25619e);
   bq256xx_hw_init(&bq25619e);
@@ -103,5 +105,9 @@ int main() {
       printf("BUTTON_INT!!!\n");
       btn_int_flag = false;
     }
+    char c = (char)getchar_timeout_us(0);
+    EmbeddedCli *cli = getCliPointer();
+    embeddedCliReceiveChar(cli, c);
+    embeddedCliProcess(cli);
   }
 }
