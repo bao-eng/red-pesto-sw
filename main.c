@@ -7,16 +7,8 @@
 #include "src/gpio.h"
 #include "src/adc.h"
 #include "src/i2c.h"
-#include "src/bq256xx_charger.h"
+#include "src/bq25619e.h"
 #include "src/cli.h"
-
-#define VRD_USB_MIN 0.25f
-#define VRD_USB_MAX 0.61f
-#define VRD_15_MIN 0.7f
-#define VRD_15_MAX 1.16f
-#define VRD_30_MIN 1.31f
-#define VRD_30_MAX 2.04f
-#define VRA_MAX 0.15f
 
 bool acc_drdy_flag;
 bool acc_wake_flag;
@@ -28,11 +20,6 @@ bool process_cli_flag;
 bool timer_callback(repeating_timer_t *rt);
 void gpio_callback(uint gpio, uint32_t events);
 
-struct bq256xx_device bq25619e = {
-  .i2c = i2c0,
-  .dev_addr = 0x6A,
-};
-
 int main() {
   stdio_init_all();
 
@@ -41,13 +28,11 @@ int main() {
   red_pesto_pwm_init();
   red_pesto_adc_init();
   red_pesto_i2c_init();
+  red_pesto_bq25619e_init();
   red_pesto_init_cli();
 
   repeating_timer_t timer;
   add_repeating_timer_ms(100, timer_callback, NULL, &timer);
-
-  bq256xx_charger_reset(&bq25619e);
-  bq256xx_hw_init(&bq25619e);
 
   while (1) {
     if(acc_drdy_flag){
@@ -67,26 +52,7 @@ int main() {
       acc_sleep_flag = false;
     }
     if(bq_int_flag){
-      busy_wait_ms(100);  // wait for the CC voltage to set
-      const float conversion_factor = 3.3f / (1 << 12);
-      adc_select_input(CC1_ADC);
-      float cc1 = adc_read() * conversion_factor;
-      adc_select_input(CC2_ADC);
-      float cc2 = adc_read() * conversion_factor;
-      float cc = cc1 > cc2 ? cc1 : cc2;
-      if ((cc > VRD_USB_MIN) && (cc < VRD_USB_MAX)) {
-        printf("vRd-USB (500mA)\n");
-        bq256xx_set_input_curr_lim(&bq25619e, 500000);
-      } else if ((cc > VRD_15_MIN) && (cc < VRD_15_MAX)) {
-        printf("vRd-1.5\n");
-        bq256xx_set_input_curr_lim(&bq25619e, 1500000);
-      } else if ((cc > VRD_30_MIN) && (cc < VRD_30_MAX)) {
-        printf("vRd-3.0\n");
-        bq256xx_set_input_curr_lim(&bq25619e, 3000000);
-      } else if (cc < VRA_MAX) {
-        printf("vRa (disconnected)\n");
-        bq256xx_set_input_curr_lim(&bq25619e, 500000);
-      }
+      bq_int_handler();
       bq_int_flag = false;
     }
     if(btn_int_flag){

@@ -24,6 +24,7 @@ add_executable(${PROJECT_NAME}
     src/bq256xx_charger.h
     src/adc.h
     src/i2c.h
+    src/bq25619e.h
     src/cli.h
     src/embedded_cli.h
 )
