@@ -8,7 +8,7 @@
 #define LED_GREEN_PIN 2
 #define LED_RED_PIN 3
 #define LED_POWER_PIN 13
-#define BTN_PIN_PIN 9
+#define BTN_PIN 9
 
 #define I2C0_SDA_PIN 24
 #define I2C0_SCL_PIN 25
