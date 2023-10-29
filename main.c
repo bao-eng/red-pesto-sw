@@ -23,25 +23,10 @@ bool acc_wake_flag;
 bool acc_sleep_flag;
 bool bq_int_flag;
 bool btn_int_flag;
+bool process_cli_flag;
 
-void gpio_callback(uint gpio, uint32_t events) {
-  if (gpio == INT1_PIN && events == GPIO_IRQ_EDGE_RISE) {
-    acc_drdy_flag = true;
-  }
-  if (gpio == INT2_PIN) {
-    if (events == GPIO_IRQ_EDGE_FALL) {
-      acc_wake_flag = true;
-    } else if (events == GPIO_IRQ_EDGE_RISE) {
-      acc_sleep_flag = true;
-    }
-  }
-  if (events == GPIO_IRQ_EDGE_RISE && gpio == BQ_INT_PIN) {
-    bq_int_flag = true;
-  }
-  if (events == GPIO_IRQ_EDGE_FALL && gpio == BTN_PIN) {
-    btn_int_flag = true;
-  }
-}
+bool timer_callback(repeating_timer_t *rt);
+void gpio_callback(uint gpio, uint32_t events);
 
 struct bq256xx_device bq25619e = {
   .i2c = i2c0,
@@ -57,6 +42,9 @@ int main() {
   red_pesto_adc_init();
   red_pesto_i2c_init();
   red_pesto_init_cli();
+
+  repeating_timer_t timer;
+  add_repeating_timer_ms(100, timer_callback, NULL, &timer);
 
   bq256xx_charger_reset(&bq25619e);
   bq256xx_hw_init(&bq25619e);
@@ -105,9 +93,39 @@ int main() {
       printf("BUTTON_INT!!!\n");
       btn_int_flag = false;
     }
-    char c = (char)getchar_timeout_us(0);
-    EmbeddedCli *cli = getCliPointer();
-    embeddedCliReceiveChar(cli, c);
-    embeddedCliProcess(cli);
+    if(process_cli_flag){
+      int tmp = getchar_timeout_us(0);
+      if(tmp != PICO_ERROR_TIMEOUT){
+        char c = (char)tmp;
+        EmbeddedCli *cli = getCliPointer();
+        embeddedCliReceiveChar(cli, c);
+        embeddedCliProcess(cli);
+      }
+      process_cli_flag = false;
+    }
   }
+}
+
+void gpio_callback(uint gpio, uint32_t events) {
+  if (gpio == INT1_PIN && events == GPIO_IRQ_EDGE_RISE) {
+    acc_drdy_flag = true;
+  }
+  if (gpio == INT2_PIN) {
+    if (events == GPIO_IRQ_EDGE_FALL) {
+      acc_wake_flag = true;
+    } else if (events == GPIO_IRQ_EDGE_RISE) {
+      acc_sleep_flag = true;
+    }
+  }
+  if (events == GPIO_IRQ_EDGE_RISE && gpio == BQ_INT_PIN) {
+    bq_int_flag = true;
+  }
+  if (events == GPIO_IRQ_EDGE_FALL && gpio == BTN_PIN) {
+    btn_int_flag = true;
+  }
+}
+
+bool timer_callback(repeating_timer_t *rt) {
+  process_cli_flag = true;
+  return true;
 }
