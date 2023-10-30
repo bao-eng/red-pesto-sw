@@ -354,7 +354,7 @@ int regmap_update_bits(i2c_inst_t *i2cinst, uint8_t dev_addr, uint8_t reg_addr,
 		buf[0] = reg_addr;
 		buf[1] = tmp;
     size_t nbytes = i2c_write_blocking(i2cinst, dev_addr, buf, 2, false);
-    if (nbytes == 1) return 0;
+    if (nbytes == 2) return 0;
     return -EINVAL;
   }
   return 0;
