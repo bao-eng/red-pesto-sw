@@ -16,6 +16,9 @@
 #define STATUS_PIN 16
 #define BQ_INT_PIN 11
 
+#define I2C1_SDA_PIN 14
+#define I2C1_SCL_PIN 15
+
 #define CC1_PIN 26
 #define CC2_PIN 27
 #define CC1_ADC 0

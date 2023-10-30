@@ -9,6 +9,7 @@
 #include "src/i2c.h"
 #include "src/bq25619e.h"
 #include "src/cli.h"
+#include "src/veml7700.h"
 
 bool acc_drdy_flag;
 bool acc_wake_flag;
@@ -30,6 +31,7 @@ int main() {
   red_pesto_i2c_init();
   red_pesto_bq25619e_init();
   red_pesto_init_cli();
+  red_pesto_veml7700_init();
 
   repeating_timer_t timer;
   add_repeating_timer_ms(100, timer_callback, NULL, &timer);

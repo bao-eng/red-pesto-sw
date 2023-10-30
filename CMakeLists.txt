@@ -27,6 +27,7 @@ add_executable(${PROJECT_NAME}
     src/bq25619e.h
     src/cli.h
     src/embedded_cli.h
+    src/veml7700.h
 )
 
 # Create map/bin/hex/uf2 files
