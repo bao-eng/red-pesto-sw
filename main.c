@@ -41,6 +41,12 @@ int main() {
       gpio_put(LED_GREEN_PIN, !gpio_get(LED_GREEN_PIN));
       int16_t data_raw_acceleration[3];
       lis2dh12_acceleration_raw_get(&dev_ctx, data_raw_acceleration);
+      float acceleration_mg[3];
+      for (int i = 0; i < 3; i++) {
+        acceleration_mg[i] = lis2dh12_from_fs2_nm_to_mg(
+                                    data_raw_acceleration[i]);
+      }
+      // printf("%4.2f %4.2f %4.2f", acceleration_mg[0]/1000.0f, acceleration_mg[1]/1000.0f, acceleration_mg[2]/1000.0f);
       acc_drdy_flag = false;
     }
     if(acc_wake_flag){
