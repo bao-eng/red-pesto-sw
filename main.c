@@ -42,12 +42,12 @@ int main() {
       acc_drdy_flag = false;
     }
     if(acc_wake_flag){
-      printf("sleep->wake\n");
+      printf("sleep->wake");
       pwm_set_gpio_level(LED_POWER_PIN, 100);
       acc_wake_flag = false;
     }
     if(acc_sleep_flag){
-      printf("wake->sleep\n");
+      printf("wake->sleep");
       pwm_set_gpio_level(LED_POWER_PIN, 0);
       acc_sleep_flag = false;
     }
@@ -56,7 +56,7 @@ int main() {
       bq_int_flag = false;
     }
     if(btn_int_flag){
-      printf("BUTTON_INT!!!\n");
+      printf("BUTTON_INT!!!");
       btn_int_flag = false;
     }
     if(process_cli_flag){
