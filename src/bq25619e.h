@@ -19,7 +19,6 @@ void red_pesto_bq25619e_init(){
   bq256xx_hw_init(&bq25619e);
 }
 
-
 void bq_int_handler(){
   busy_wait_ms(100);  // wait for the CC voltage to set
   const float conversion_factor = 3.3f / (1 << 12);
@@ -41,4 +40,8 @@ void bq_int_handler(){
     printf("vRa (disconnected)\n");
     bq256xx_set_input_curr_lim(&bq25619e, 500000);
   }
+}
+
+void bq_enter_ship_mode(){
+  bq256xx_set_ship_mode(&bq25619e);
 }

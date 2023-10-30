@@ -19,21 +19,36 @@ static void reboot2bootloader(EmbeddedCli *cli, char *args, void *context) {
     reset_usb_boot(0, 0);
 }
 
+static void ship_mode(EmbeddedCli *cli, char *args, void *context) {
+    bq_enter_ship_mode();
+}
+
 void red_pesto_init_cli(){
     cli = embeddedCliNewDefault();
     void writeChar(EmbeddedCli *embeddedCli, char c);
     cli->writeChar = writeCharToCli;
     char c = (char)getchar_timeout_us(0);
     embeddedCliReceiveChar(cli, c);
-    CliCommandBinding binding =
+
+    CliCommandBinding dfu_binding =
     {
-        "reset_usb_boot",
+        "usb_boot",
         "Reboot the device into BOOTSEL mode",
         false,
         NULL,
         reboot2bootloader
     };
-    embeddedCliAddBinding(cli, binding);
+    embeddedCliAddBinding(cli, dfu_binding);
+
+    CliCommandBinding ship_binding =
+    {
+        "ship_mode",
+        "Put bq25619e charger into ship mode",
+        false,
+        NULL,
+        ship_mode
+    };
+    embeddedCliAddBinding(cli, ship_binding);
 }
 
 EmbeddedCli *getCliPointer() {

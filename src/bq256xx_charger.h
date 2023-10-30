@@ -154,6 +154,16 @@
 
 #define BQ256XX_REG_RST		BIT(7)
 
+#define BATFET_DIS_MASK 		BIT(5)
+#define BATFET_DIS_BIT_SHIFT 		5
+#define BATFET_RST_WVBUS_MASK 		BIT(4)
+#define BATFET_RST_WVBUS_BIT_SHIFT 		4
+#define BATFET_DLY_MASK 		BIT(3)
+#define BATFET_DLY_BIT_SHIFT 		3
+
+#define EN_HIZ_MASK 		BIT(7)
+#define EN_HIZ_BIT_SHIFT 		7
+
 struct reg_default {
 	unsigned int reg;
 	unsigned int def;
@@ -930,4 +940,16 @@ static int bq256xx_hw_init(struct bq256xx_device *bq)
 	// }
 
 	return 0;
+}
+
+static int bq256xx_set_ship_mode(struct bq256xx_device *bq)
+{
+	int res;
+	res = regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_INPUT_CURRENT_LIMIT,
+				EN_HIZ_MASK, 1 << EN_HIZ_BIT_SHIFT);
+	res = regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_CHARGER_CONTROL_3,
+					BATFET_DLY_MASK, 0 << BATFET_DLY_BIT_SHIFT);
+	res = regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_CHARGER_CONTROL_3,
+					BATFET_DIS_MASK, 1 << BATFET_DIS_BIT_SHIFT);
+	return res;
 }
