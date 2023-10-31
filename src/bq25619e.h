@@ -1,6 +1,7 @@
 #pragma once
 #include "hardware/i2c.h"
 #include "bq256xx_charger.h"
+#include "cli.h"
 
 #define VRD_USB_MIN 0.25f
 #define VRD_USB_MAX 0.61f
@@ -29,16 +30,16 @@ void bq_int_handler(){
   float cc2 = adc_read() * conversion_factor;
   float cc = cc1 > cc2 ? cc1 : cc2;
   if ((cc > VRD_USB_MIN) && (cc < VRD_USB_MAX)) {
-    printf("vRd-USB (500mA)\n");
+    DEBUG_PRINT("vRd-USB (500mA)");
     bq256xx_set_input_curr_lim(&bq25619e, 500000);
   } else if ((cc > VRD_15_MIN) && (cc < VRD_15_MAX)) {
-    printf("vRd-1.5\n");
+    DEBUG_PRINT("vRd-1.5");
     bq256xx_set_input_curr_lim(&bq25619e, 1500000);
   } else if ((cc > VRD_30_MIN) && (cc < VRD_30_MAX)) {
-    printf("vRd-3.0\n");
+    DEBUG_PRINT("vRd-3.0");
     bq256xx_set_input_curr_lim(&bq25619e, 3000000);
   } else if (cc < VRA_MAX) {
-    printf("vRa (disconnected)\n");
+    DEBUG_PRINT("vRa (disconnected)");
     bq256xx_set_input_curr_lim(&bq25619e, 500000);
   }
 }

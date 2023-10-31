@@ -16,6 +16,7 @@ pico_sdk_init()
 add_executable(${PROJECT_NAME} 
     main.c
     src/board.h
+    src/common.h
     src/lis2dh12.h
     src/lis2dh12-pid/lis2dh12_reg.c
     src/lis2dh12-pid/lis2dh12_reg.h
@@ -47,8 +48,8 @@ pico_enable_stdio_usb(${PROJECT_NAME} 1)
 pico_enable_stdio_uart(${PROJECT_NAME} 0)
 
 IF(CMAKE_COMPILER_IS_GNUCC)
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0 -Wall")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -Wall")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0 -Wall -DENABLE_DEBUG_OUTPUT")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -Wall -DENABLE_DEBUG_OUTPUT")
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wall -Werror")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Werror")
 ENDIF(CMAKE_COMPILER_IS_GNUCC)

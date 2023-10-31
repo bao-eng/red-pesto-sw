@@ -69,7 +69,7 @@ void cli_printf(const char *format, ...) {
 
     // Check if string fitted in buffer else print error to stderr
     if (length < 0) {
-        fprintf(stderr, "Error formatting the string\r\n");
+        printf("Error formatting the string\r\n");
         return;
     }
 

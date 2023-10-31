@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "src/board.h"
+#include "src/common.h"
 #include "src/lis2dh12.h"
 #include "src/pwm.h"
 #include "src/gpio.h"
@@ -51,12 +52,12 @@ int main() {
       acc_drdy_flag = false;
     }
     if(acc_wake_flag){
-      cli_printf("sleep->wake");
+      DEBUG_PRINT("sleep->wake");
       pwm_set_gpio_level(LED_POWER_PIN, 100);
       acc_wake_flag = false;
     }
     if(acc_sleep_flag){
-      cli_printf("wake->sleep");
+      DEBUG_PRINT("wake->sleep");
       pwm_set_gpio_level(LED_POWER_PIN, 0);
       acc_sleep_flag = false;
     }
@@ -65,7 +66,7 @@ int main() {
       bq_int_flag = false;
     }
     if(btn_int_flag){
-      cli_printf("BUTTON_INT!!!");
+      DEBUG_PRINT("BUTTON_INT!!!");
       btn_int_flag = false;
     }
     if(process_cli_flag){
