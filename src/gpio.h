@@ -43,9 +43,11 @@ void red_pesto_gpio_init(gpio_irq_callback_t callback){
   gpio_set_irq_enabled_with_callback(BQ_INT_PIN, GPIO_IRQ_EDGE_RISE, true,
                                      callback);
 
+  gpio_init(CHRG_EN_PIN);
   gpio_set_dir(CHRG_EN_PIN, GPIO_OUT);
   gpio_put(CHRG_EN_PIN, false);
 
+  gpio_init(BTN_PIN);
   gpio_set_dir(BTN_PIN, GPIO_IN);
   gpio_set_irq_enabled_with_callback(BTN_PIN, GPIO_IRQ_EDGE_FALL, true,
                                       callback);
