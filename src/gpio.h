@@ -4,7 +4,7 @@
 #include "board.h"
 
 void red_pesto_gpio_init(gpio_irq_callback_t callback){
-  spi_init(spi0, 500 * 1000);
+  spi_init(spi0, 8000 * 1000);
   spi_set_format(spi0,  // SPI instance
                  8,     // Number of bits per transfer
                  1,     // Polarity (CPOL)
