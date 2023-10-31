@@ -1,3 +1,4 @@
+#pragma once
 #include "hardware/i2c.h"
 #include "bq256xx_charger.h"
 

@@ -1,3 +1,4 @@
+#pragma once
 #include "hardware/i2c.h"
 
 #define BIT(nr) (1 << (nr))

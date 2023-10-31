@@ -1,3 +1,4 @@
+#pragma once
 #include "hardware/adc.h"
 #include "board.h"
 

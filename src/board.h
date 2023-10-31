@@ -1,3 +1,4 @@
+#pragma once
 #define SPI_MOSI_PIN 19
 #define SPI_MISO_PIN 20
 #define SPI_CLK_PIN 18
