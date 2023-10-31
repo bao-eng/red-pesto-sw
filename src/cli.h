@@ -7,7 +7,6 @@
 #include "embedded_cli.h"
 
 #define CLI_PRINT_BUFFER_SIZE 512
-#define printf cli_printf
 
 static EmbeddedCli *cli;
 

@@ -46,16 +46,17 @@ int main() {
         acceleration_mg[i] = lis2dh12_from_fs2_nm_to_mg(
                                     data_raw_acceleration[i]);
       }
-      // printf("%4.2f %4.2f %4.2f", acceleration_mg[0]/1000.0f, acceleration_mg[1]/1000.0f, acceleration_mg[2]/1000.0f);
+      //this printf is the bottle neck for the accelerometer ODR (cli_printf ~2x times slower), usb stdio 10x slower than default 115200 uart
+      // printf("%4.2f %4.2f %4.2f\n", acceleration_mg[0]/1000.0f, acceleration_mg[1]/1000.0f, acceleration_mg[2]/1000.0f);
       acc_drdy_flag = false;
     }
     if(acc_wake_flag){
-      printf("sleep->wake");
+      cli_printf("sleep->wake");
       pwm_set_gpio_level(LED_POWER_PIN, 100);
       acc_wake_flag = false;
     }
     if(acc_sleep_flag){
-      printf("wake->sleep");
+      cli_printf("wake->sleep");
       pwm_set_gpio_level(LED_POWER_PIN, 0);
       acc_sleep_flag = false;
     }
@@ -64,7 +65,7 @@ int main() {
       bq_int_flag = false;
     }
     if(btn_int_flag){
-      printf("BUTTON_INT!!!");
+      cli_printf("BUTTON_INT!!!");
       btn_int_flag = false;
     }
     if(process_cli_flag){
@@ -91,10 +92,10 @@ void gpio_callback(uint gpio, uint32_t events) {
       acc_sleep_flag = true;
     }
   }
-  if (events == GPIO_IRQ_EDGE_RISE && gpio == BQ_INT_PIN) {
+  if (gpio == BQ_INT_PIN && events == GPIO_IRQ_EDGE_RISE) {
     bq_int_flag = true;
   }
-  if (events == GPIO_IRQ_EDGE_FALL && gpio == BTN_PIN) {
+  if (gpio == BTN_PIN && events == GPIO_IRQ_EDGE_FALL) {
     btn_int_flag = true;
   }
 }
