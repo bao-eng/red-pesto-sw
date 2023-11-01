@@ -41,6 +41,9 @@ int32_t platform_read(void *handle, uint8_t Reg, uint8_t *Bufp, uint16_t len) {
 }
 void platform_delay(uint32_t millisec) { busy_wait_ms(millisec); }
 
+//FIXME red_pesto_lis2dh12_init() not working(lis2dh12 ZYXDA INT1 not raising) in Release builds, O0 level as a workaround
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
 void red_pesto_lis2dh12_init(){
   lis2dh12_reg_t reg;
   dev_ctx.write_reg = platform_write;
@@ -85,3 +88,4 @@ void red_pesto_lis2dh12_init(){
   int16_t data_raw_acceleration[3];
   lis2dh12_acceleration_raw_get(&dev_ctx, data_raw_acceleration);
 }
+#pragma GCC pop_options
