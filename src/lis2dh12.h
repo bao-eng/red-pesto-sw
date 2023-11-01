@@ -74,7 +74,7 @@ void red_pesto_lis2dh12_init(){
   ctrl_reg6.int_polarity = 0;
   lis2dh12_pin_int2_config_set(&dev_ctx, &ctrl_reg6);
   lis2dh12_act_threshold_set(&dev_ctx, 10);
-  lis2dh12_act_timeout_set(&dev_ctx, 100);
+  lis2dh12_act_timeout_set(&dev_ctx, 10);
 
   /* Enable Block Data Update. */
   lis2dh12_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);

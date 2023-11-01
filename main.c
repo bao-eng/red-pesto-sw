@@ -27,8 +27,11 @@ volatile bool led_on;
 
 bool cli_timer_callback(repeating_timer_t *rt);
 bool veml_timer_callback(repeating_timer_t *rt);
+int64_t alarm_callback(alarm_id_t id, void *user_data);
 void gpio_callback(uint gpio, uint32_t events);
 uint16_t get_led_pwm_adjusted(uint16_t als);
+
+alarm_id_t alarm_id;
 
 int main() {
   stdio_init_all();
@@ -67,14 +70,14 @@ int main() {
     }
     if(acc_wake_flag){
       DEBUG_PRINT("sleep->wake");
+      if(alarm_id) cancel_alarm(alarm_id);
       led_on = true;
       pwm_set_gpio_level(LED_POWER_PIN, get_led_pwm_adjusted(als_val));
       acc_wake_flag = false;
     }
     if(acc_sleep_flag){
       DEBUG_PRINT("wake->sleep");
-      led_on = false;
-      pwm_set_gpio_level(LED_POWER_PIN, 0);
+      alarm_id = add_alarm_in_ms(10000, alarm_callback, NULL, false);
       acc_sleep_flag = false;
     }
     if(bq_int_flag){
@@ -141,4 +144,10 @@ uint16_t get_led_pwm_adjusted(uint16_t als){
   uint16_t res = MIN_LED_PWM + (((MAX_LED_PWM-MIN_LED_PWM))/MAX_ALS)*(float)als;
   if (res > MAX_LED_PWM) res = MAX_LED_PWM;
   return res;
+}
+
+int64_t alarm_callback(alarm_id_t id, void *user_data) {
+  led_on = false;
+  pwm_set_gpio_level(LED_POWER_PIN, 0);
+  return 0;
 }
