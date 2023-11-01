@@ -47,7 +47,8 @@ int main() {
         acceleration_mg[i] = lis2dh12_from_fs2_nm_to_mg(
                                     data_raw_acceleration[i]);
       }
-      //this printf is the bottle neck for the accelerometer ODR (cli_printf ~2x times slower), usb stdio 10x slower than default 115200 uart
+      // this printf is the bottle neck for the accelerometer ODR (cli_printf ~2x times slower), usb stdio 10x slower than default 115200 uart
+      // 50Hz - not ok; 25Hz - ok
       // printf("%4.2f %4.2f %4.2f\n", acceleration_mg[0]/1000.0f, acceleration_mg[1]/1000.0f, acceleration_mg[2]/1000.0f);
       acc_drdy_flag = false;
     }

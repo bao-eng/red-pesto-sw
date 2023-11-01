@@ -78,12 +78,12 @@ void red_pesto_lis2dh12_init(){
 
   /* Enable Block Data Update. */
   lis2dh12_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
-  /* Set full scale to 2g. */
+  /* Set full scale*/
   lis2dh12_full_scale_set(&dev_ctx, LIS2DH12_2g);
-  /* Set device in normal mode. */
+  /* Set device mode. */
   lis2dh12_operating_mode_set(&dev_ctx, LIS2DH12_NM_10bit);
-  /* Set Output Data Rate to 1Hz. */
-  lis2dh12_data_rate_set(&dev_ctx, LIS2DH12_ODR_50Hz);
+  /* Set Output Data Rate*/
+  lis2dh12_data_rate_set(&dev_ctx, LIS2DH12_ODR_25Hz);
 
   int16_t data_raw_acceleration[3];
   lis2dh12_acceleration_raw_get(&dev_ctx, data_raw_acceleration);
