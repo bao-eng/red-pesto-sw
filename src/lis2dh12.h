@@ -4,6 +4,7 @@
 
 #include "board.h"
 #include "lis2dh12-pid/lis2dh12_reg.h"
+#include "cli.h"
 
 #define BOOT_TIME 5  // ms
 
@@ -57,9 +58,9 @@ void red_pesto_lis2dh12_init(){
   lis2dh12_device_id_get(&dev_ctx, &reg.byte);
   lis2dh12_device_id_get(&dev_ctx, &reg.byte);
   if (reg.byte == LIS2DH12_ID) {
-    printf("LIS2DH12 detected\n");
+    DEBUG_PRINT("LIS2DH12 detected");
   } else {
-    printf("LIS2DH12 not found!\n");
+    DEBUG_PRINT("LIS2DH12 not found!");
   }
 
   lis2dh12_ctrl_reg3_t ctrl_reg3;

@@ -35,14 +35,14 @@ alarm_id_t alarm_id;
 
 int main() {
   stdio_init_all();
-
+  red_pesto_init_cli();
   red_pesto_gpio_init(gpio_callback);
   red_pesto_lis2dh12_init();
   red_pesto_pwm_init();
   red_pesto_adc_init();
   red_pesto_i2c_init();
   red_pesto_bq25619e_init();
-  red_pesto_init_cli();
+
   red_pesto_veml7700_init();
 
   repeating_timer_t cli_timer;
@@ -85,7 +85,7 @@ int main() {
       bq_int_flag = false;
     }
     if(btn_int_flag){
-      DEBUG_PRINT("BUTTON_INT!!!");
+      DEBUG_PRINT("button interrupt!");
       btn_int_flag = false;
     }
     if(process_cli_flag){
@@ -105,7 +105,7 @@ int main() {
         pwm_level = get_led_pwm_adjusted(als_val);
         pwm_set_gpio_level(LED_POWER_PIN, pwm_level);
       }
-      printf("%d %d\n", als_val, pwm_level);
+      // printf("%d %d\n", als_val, pwm_level);
       veml_read_flag = 0;
     }
   }
