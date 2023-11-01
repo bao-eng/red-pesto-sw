@@ -11,7 +11,7 @@
 #define MIN_ST_LIMIT_LSb 17 * 64
 #define MAX_ST_LIMIT_LSb 360 * 64
 
-stmdev_ctx_t dev_ctx; /** xxxxxxx is the used part number **/
+static stmdev_ctx_t dev_ctx; /** xxxxxxx is the used part number **/
 
 static inline void cs_select() {
   gpio_put(SPI_CS_PIN, 0);  // Active low
