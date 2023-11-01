@@ -62,8 +62,6 @@ void red_pesto_lis2dh12_init(){
   lis2dh12_ctrl_reg3_t ctrl_reg3;
   ctrl_reg3.i1_zyxda = 1;
   lis2dh12_pin_int1_config_set(&dev_ctx, &ctrl_reg3);
-  int16_t data_raw_acceleration[3];
-  lis2dh12_acceleration_raw_get(&dev_ctx, data_raw_acceleration);
 
   lis2dh12_hp_t high_pass = LIS2DH12_DISC_FROM_INT_GENERATOR;
   lis2dh12_high_pass_int_conf_set(&dev_ctx, high_pass);
@@ -83,4 +81,7 @@ void red_pesto_lis2dh12_init(){
   lis2dh12_operating_mode_set(&dev_ctx, LIS2DH12_NM_10bit);
   /* Set Output Data Rate to 1Hz. */
   lis2dh12_data_rate_set(&dev_ctx, LIS2DH12_ODR_50Hz);
+
+  int16_t data_raw_acceleration[3];
+  lis2dh12_acceleration_raw_get(&dev_ctx, data_raw_acceleration);
 }
