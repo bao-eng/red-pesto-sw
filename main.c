@@ -12,12 +12,12 @@
 #include "src/cli.h"
 #include "src/veml7700.h"
 
-bool acc_drdy_flag;
-bool acc_wake_flag;
-bool acc_sleep_flag;
-bool bq_int_flag;
-bool btn_int_flag;
-bool process_cli_flag;
+volatile bool acc_drdy_flag;
+volatile bool acc_wake_flag;
+volatile bool acc_sleep_flag;
+volatile bool bq_int_flag;
+volatile bool btn_int_flag;
+volatile bool process_cli_flag;
 
 bool timer_callback(repeating_timer_t *rt);
 void gpio_callback(uint gpio, uint32_t events);
