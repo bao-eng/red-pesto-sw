@@ -59,15 +59,6 @@ void red_pesto_lis2dh12_init(){
     printf("LIS2DH12 not found!\n");
   }
 
-  /* Enable Block Data Update. */
-  lis2dh12_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
-  /* Set full scale to 2g. */
-  lis2dh12_full_scale_set(&dev_ctx, LIS2DH12_2g);
-  /* Set device in normal mode. */
-  lis2dh12_operating_mode_set(&dev_ctx, LIS2DH12_NM_10bit);
-  /* Set Output Data Rate to 1Hz. */
-  lis2dh12_data_rate_set(&dev_ctx, LIS2DH12_ODR_50Hz);
-
   lis2dh12_ctrl_reg3_t ctrl_reg3;
   ctrl_reg3.i1_zyxda = 1;
   lis2dh12_pin_int1_config_set(&dev_ctx, &ctrl_reg3);
@@ -83,4 +74,13 @@ void red_pesto_lis2dh12_init(){
   lis2dh12_pin_int2_config_set(&dev_ctx, &ctrl_reg6);
   lis2dh12_act_threshold_set(&dev_ctx, 10);
   lis2dh12_act_timeout_set(&dev_ctx, 10);
+
+  /* Enable Block Data Update. */
+  lis2dh12_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
+  /* Set full scale to 2g. */
+  lis2dh12_full_scale_set(&dev_ctx, LIS2DH12_2g);
+  /* Set device in normal mode. */
+  lis2dh12_operating_mode_set(&dev_ctx, LIS2DH12_NM_10bit);
+  /* Set Output Data Rate to 1Hz. */
+  lis2dh12_data_rate_set(&dev_ctx, LIS2DH12_ODR_50Hz);
 }
