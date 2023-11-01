@@ -74,3 +74,9 @@ void red_pesto_veml7700_init(){
   veml7700_init(i2c0);
   veml7700_init(i2c1);
 }
+
+uint16_t red_pesto_veml7700_get_average(){
+  uint16_t als0 = veml7700_read_als_data(i2c0);
+  uint16_t als1 = veml7700_read_als_data(i2c1);
+  return (uint16_t)((als0 + als1)/2);
+}

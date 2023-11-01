@@ -12,15 +12,23 @@
 #include "src/cli.h"
 #include "src/veml7700.h"
 
+#define MAX_LED_PWM 400.0f
+#define MIN_LED_PWM 100.0f
+#define MAX_ALS 1000.0f
+
 volatile bool acc_drdy_flag;
 volatile bool acc_wake_flag;
 volatile bool acc_sleep_flag;
 volatile bool bq_int_flag;
 volatile bool btn_int_flag;
 volatile bool process_cli_flag;
+volatile bool veml_read_flag;
+volatile bool led_on;
 
-bool timer_callback(repeating_timer_t *rt);
+bool cli_timer_callback(repeating_timer_t *rt);
+bool veml_timer_callback(repeating_timer_t *rt);
 void gpio_callback(uint gpio, uint32_t events);
+uint16_t get_led_pwm_adjusted(uint16_t als);
 
 int main() {
   stdio_init_all();
@@ -34,12 +42,17 @@ int main() {
   red_pesto_init_cli();
   red_pesto_veml7700_init();
 
-  repeating_timer_t timer;
-  add_repeating_timer_ms(100, timer_callback, NULL, &timer);
+  repeating_timer_t cli_timer;
+  add_repeating_timer_ms(100, cli_timer_callback, NULL, &cli_timer);
+
+  repeating_timer_t veml_timer;
+  add_repeating_timer_ms(100, veml_timer_callback, NULL, &veml_timer);
+
+  uint16_t als_val = 0;
 
   while (1) {
     if(acc_drdy_flag){
-      gpio_put(LED_GREEN_PIN, !gpio_get(LED_GREEN_PIN));
+      // gpio_put(LED_GREEN_PIN, !gpio_get(LED_GREEN_PIN));
       int16_t data_raw_acceleration[3];
       lis2dh12_acceleration_raw_get(&dev_ctx, data_raw_acceleration);
       float acceleration_mg[3];
@@ -54,11 +67,13 @@ int main() {
     }
     if(acc_wake_flag){
       DEBUG_PRINT("sleep->wake");
-      pwm_set_gpio_level(LED_POWER_PIN, 100);
+      led_on = true;
+      pwm_set_gpio_level(LED_POWER_PIN, get_led_pwm_adjusted(als_val));
       acc_wake_flag = false;
     }
     if(acc_sleep_flag){
       DEBUG_PRINT("wake->sleep");
+      led_on = false;
       pwm_set_gpio_level(LED_POWER_PIN, 0);
       acc_sleep_flag = false;
     }
@@ -79,6 +94,16 @@ int main() {
         embeddedCliProcess(cli);
       }
       process_cli_flag = false;
+    }
+    if(veml_read_flag){
+      als_val = red_pesto_veml7700_get_average();
+      uint16_t pwm_level = 0;
+      if(led_on){
+        pwm_level = get_led_pwm_adjusted(als_val);
+        pwm_set_gpio_level(LED_POWER_PIN, pwm_level);
+      }
+      printf("%d %d\n", als_val, pwm_level);
+      veml_read_flag = 0;
     }
   }
 }
@@ -102,7 +127,18 @@ void gpio_callback(uint gpio, uint32_t events) {
   }
 }
 
-bool timer_callback(repeating_timer_t *rt) {
+bool cli_timer_callback(repeating_timer_t *rt) {
   process_cli_flag = true;
   return true;
+}
+
+bool veml_timer_callback(repeating_timer_t *rt) {
+  veml_read_flag = true;
+  return true;
+}
+
+uint16_t get_led_pwm_adjusted(uint16_t als){
+  uint16_t res = MIN_LED_PWM + (((MAX_LED_PWM-MIN_LED_PWM))/MAX_ALS)*(float)als;
+  if (res > MAX_LED_PWM) res = MAX_LED_PWM;
+  return res;
 }
