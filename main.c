@@ -14,7 +14,7 @@
 
 #define MAX_LED_PWM 400.0f
 #define MIN_LED_PWM 100.0f
-#define MAX_ALS 1000.0f
+#define MAX_ALS 30000.0f
 
 volatile bool acc_drdy_flag;
 volatile bool acc_wake_flag;
