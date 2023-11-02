@@ -58,7 +58,6 @@ int main() {
   add_repeating_timer_ms(100, veml_timer_callback, NULL, &veml_timer);
 
   uint16_t als_val = 0;
-  // uint32_t t_pressed, t_released;
 
   while (1) {
     if(acc_drdy_flag){
@@ -118,7 +117,6 @@ int main() {
         pwm_level = get_led_pwm_adjusted(als_val);
         pwm_set_gpio_level(LED_POWER_PIN, pwm_level);
       }
-      // printf("%d %d\n", als_val, pwm_level);
       veml_read_flag = 0;
     }
   }
