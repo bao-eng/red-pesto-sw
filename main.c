@@ -38,8 +38,7 @@ alarm_id_t sleep_alarm_id, button_alarm_id;
 int main() {
   stdio_init_all();
   red_pesto_init_cli();
-  EmbeddedCli *cli = getCliPointer();
-  red_pesto_cli_bindings(cli);
+  red_pesto_cli_bindings(getCliPointer());
   red_pesto_gpio_init(gpio_callback);
   gpio_put(LED_GREEN_PIN, 1);
   sleep_ms(500);
