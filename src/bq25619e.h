@@ -60,6 +60,9 @@ void bq_int_handler(){
         DEBUG_PRINT("Charging termination");
         break;
     }
+    const float conversion_factor = 6.4f / (1 << 12);
+    adc_select_input(VBAT_ADC);
+    DEBUG_PRINT("VBAT: %.2f V\n", adc_read() * conversion_factor);
   }else{
     if(bq25619e.state.online){
       DEBUG_PRINT("Charging cable disconnected");
