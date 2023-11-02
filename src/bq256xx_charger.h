@@ -370,7 +370,7 @@ int regmap_update_bits(i2c_inst_t *i2cinst, uint8_t dev_addr, uint8_t reg_addr,
   return 0;
 }
 
-static int bq256xx_array_parse(int array_size, int val, const int array[])
+int bq256xx_array_parse(int array_size, int val, const int array[])
 {
 	int i = 0;
 
@@ -460,7 +460,7 @@ static int bq256xx_get_state(struct bq256xx_device *bq,
 	return 0;
 }
 
-static int bq256xx_set_charge_type(struct bq256xx_device *bq, int type)
+int bq256xx_set_charge_type(struct bq256xx_device *bq, int type)
 {
 	int chg_config = 0;
 
@@ -469,7 +469,7 @@ static int bq256xx_set_charge_type(struct bq256xx_device *bq, int type)
 				(chg_config ? 1 : 0) << BQ256XX_CHG_CONFIG_BIT_SHIFT);
 }
 
-static int bq256xx_get_ichg_curr(struct bq256xx_device *bq)
+int bq256xx_get_ichg_curr(struct bq256xx_device *bq)
 {
 	unsigned int charge_current_limit;
 	unsigned int ichg_reg_code;
@@ -485,7 +485,7 @@ static int bq256xx_get_ichg_curr(struct bq256xx_device *bq)
 	return ichg_reg_code * BQ256XX_ICHG_STEP_uA;
 }
 
-static int bq25618_619_get_ichg_curr(struct bq256xx_device *bq)
+int bq25618_619_get_ichg_curr(struct bq256xx_device *bq)
 {
 	unsigned int charge_current_limit;
 	unsigned int ichg_reg_code;
@@ -504,7 +504,7 @@ static int bq25618_619_get_ichg_curr(struct bq256xx_device *bq)
 	return bq25618_619_ichg_values[ichg_reg_code - BQ25618_ICHG_THRESH];
 }
 
-static int bq256xx_set_ichg_curr(struct bq256xx_device *bq, int ichg)
+int bq256xx_set_ichg_curr(struct bq256xx_device *bq, int ichg)
 {
 	unsigned int ichg_reg_code;
 	int ichg_max = bq->init_data.ichg_max;
@@ -516,7 +516,7 @@ static int bq256xx_set_ichg_curr(struct bq256xx_device *bq, int ichg)
 					BQ256XX_ICHG_MASK, ichg_reg_code);
 }
 
-static int bq25618_619_set_ichg_curr(struct bq256xx_device *bq, int ichg)
+int bq25618_619_set_ichg_curr(struct bq256xx_device *bq, int ichg)
 {
 	int array_size = ARRAY_SIZE(bq25618_619_ichg_values);
 	unsigned int ichg_reg_code;
@@ -535,7 +535,7 @@ static int bq25618_619_set_ichg_curr(struct bq256xx_device *bq, int ichg)
 					BQ256XX_ICHG_MASK, ichg_reg_code);
 }
 
-static int bq25618_619_get_chrg_volt(struct bq256xx_device *bq)
+int bq25618_619_get_chrg_volt(struct bq256xx_device *bq)
 {
 	unsigned int battery_volt_lim;
 	unsigned int vbatreg_reg_code;
@@ -558,7 +558,7 @@ static int bq25618_619_get_chrg_volt(struct bq256xx_device *bq)
 	return bq25618_619_vbatreg_values[vbatreg_reg_code];
 }
 
-static int bq25611d_get_chrg_volt(struct bq256xx_device *bq)
+int bq25611d_get_chrg_volt(struct bq256xx_device *bq)
 {
 	unsigned int battery_volt_lim;
 	unsigned int vbatreg_reg_code;
@@ -580,7 +580,7 @@ static int bq25611d_get_chrg_volt(struct bq256xx_device *bq)
 	return bq25611d_vbatreg_values[vbatreg_reg_code];
 }
 
-static int bq2560x_get_chrg_volt(struct bq256xx_device *bq)
+int bq2560x_get_chrg_volt(struct bq256xx_device *bq)
 {
 	unsigned int battery_volt_lim;
 	unsigned int vbatreg_reg_code;
@@ -598,7 +598,7 @@ static int bq2560x_get_chrg_volt(struct bq256xx_device *bq)
 					+ BQ2560X_VBATREG_OFFSET_uV;
 }
 
-static int bq25601d_get_chrg_volt(struct bq256xx_device *bq)
+int bq25601d_get_chrg_volt(struct bq256xx_device *bq)
 {
 	unsigned int battery_volt_lim;
 	unsigned int vbatreg_reg_code;
@@ -616,7 +616,7 @@ static int bq25601d_get_chrg_volt(struct bq256xx_device *bq)
 					+ BQ25601D_VBATREG_OFFSET_uV;
 }
 
-static int bq25618_619_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
+int bq25618_619_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
 {
 	int array_size = ARRAY_SIZE(bq25618_619_vbatreg_values);
 	unsigned int vbatreg_reg_code;
@@ -638,7 +638,7 @@ static int bq25618_619_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
 						BQ256XX_VBATREG_BIT_SHIFT);
 }
 
-static int bq25611d_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
+int bq25611d_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
 {
 	int array_size = ARRAY_SIZE(bq25611d_vbatreg_values);
 	unsigned int vbatreg_reg_code;
@@ -660,7 +660,7 @@ static int bq25611d_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
 						BQ256XX_VBATREG_BIT_SHIFT);
 }
 
-static int bq2560x_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
+int bq2560x_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
 {
 	unsigned int vbatreg_reg_code;
 	int vbatreg_max = bq->init_data.vbatreg_max;
@@ -675,7 +675,7 @@ static int bq2560x_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
 						BQ256XX_VBATREG_BIT_SHIFT);
 }
 
-static int bq25601d_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
+int bq25601d_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
 {
 	unsigned int vbatreg_reg_code;
 	int vbatreg_max = bq->init_data.vbatreg_max;
@@ -690,13 +690,13 @@ static int bq25601d_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
 						BQ256XX_VBATREG_BIT_SHIFT);
 }
 
-static int bq256xx_set_ts_ignore(struct bq256xx_device *bq, bool ts_ignore)
+int bq256xx_set_ts_ignore(struct bq256xx_device *bq, bool ts_ignore)
 {
 	return regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_INPUT_CURRENT_LIMIT,
 				BQ256XX_TS_IGNORE, (ts_ignore ? 1 : 0) << BQ256XX_TS_IGNORE_SHIFT);
 }
 
-static int bq256xx_get_prechrg_curr(struct bq256xx_device *bq)
+int bq256xx_get_prechrg_curr(struct bq256xx_device *bq)
 {
 	unsigned int prechg_and_term_curr_lim;
 	unsigned int iprechg_reg_code;
@@ -714,7 +714,7 @@ static int bq256xx_get_prechrg_curr(struct bq256xx_device *bq)
 						BQ256XX_IPRECHG_OFFSET_uA;
 }
 
-static int bq256xx_set_prechrg_curr(struct bq256xx_device *bq, int iprechg)
+int bq256xx_set_prechrg_curr(struct bq256xx_device *bq, int iprechg)
 {
 	unsigned int iprechg_reg_code;
 
@@ -728,7 +728,7 @@ static int bq256xx_set_prechrg_curr(struct bq256xx_device *bq, int iprechg)
 				BQ256XX_IPRECHG_MASK, iprechg_reg_code);
 }
 
-static int bq25618_619_get_prechrg_curr(struct bq256xx_device *bq)
+int bq25618_619_get_prechrg_curr(struct bq256xx_device *bq)
 {
 	unsigned int prechg_and_term_curr_lim;
 	unsigned int iprechg_reg_code;
@@ -746,7 +746,7 @@ static int bq25618_619_get_prechrg_curr(struct bq256xx_device *bq)
 						BQ25618_IPRECHG_OFFSET_uA;
 }
 
-static int bq25618_619_set_prechrg_curr(struct bq256xx_device *bq, int iprechg)
+int bq25618_619_set_prechrg_curr(struct bq256xx_device *bq, int iprechg)
 {
 	unsigned int iprechg_reg_code;
 
@@ -760,7 +760,7 @@ static int bq25618_619_set_prechrg_curr(struct bq256xx_device *bq, int iprechg)
 				BQ256XX_IPRECHG_MASK, iprechg_reg_code);
 }
 
-static int bq256xx_get_term_curr(struct bq256xx_device *bq)
+int bq256xx_get_term_curr(struct bq256xx_device *bq)
 {
 	unsigned int prechg_and_term_curr_lim;
 	unsigned int iterm_reg_code;
@@ -777,7 +777,7 @@ static int bq256xx_get_term_curr(struct bq256xx_device *bq)
 						BQ256XX_ITERM_OFFSET_uA;
 }
 
-static int bq256xx_set_term_curr(struct bq256xx_device *bq, int iterm)
+int bq256xx_set_term_curr(struct bq256xx_device *bq, int iterm)
 {
 	unsigned int iterm_reg_code;
 
@@ -790,7 +790,7 @@ static int bq256xx_set_term_curr(struct bq256xx_device *bq, int iterm)
 				BQ256XX_ITERM_MASK, iterm_reg_code);
 }
 
-static int bq25618_619_get_term_curr(struct bq256xx_device *bq)
+int bq25618_619_get_term_curr(struct bq256xx_device *bq)
 {
 	unsigned int prechg_and_term_curr_lim;
 	unsigned int iterm_reg_code;
@@ -807,7 +807,7 @@ static int bq25618_619_get_term_curr(struct bq256xx_device *bq)
 						BQ25618_ITERM_OFFSET_uA;
 }
 
-static int bq25618_619_set_term_curr(struct bq256xx_device *bq, int iterm)
+int bq25618_619_set_term_curr(struct bq256xx_device *bq, int iterm)
 {
 	unsigned int iterm_reg_code;
 
@@ -820,7 +820,7 @@ static int bq25618_619_set_term_curr(struct bq256xx_device *bq, int iterm)
 				BQ256XX_ITERM_MASK, iterm_reg_code);
 }
 
-static int bq256xx_get_input_volt_lim(struct bq256xx_device *bq)
+int bq256xx_get_input_volt_lim(struct bq256xx_device *bq)
 {
 	unsigned int charger_control_2;
 	unsigned int vindpm_reg_code;
@@ -837,7 +837,7 @@ static int bq256xx_get_input_volt_lim(struct bq256xx_device *bq)
 						BQ256XX_VINDPM_OFFSET_uV;
 }
 
-static int bq256xx_set_input_volt_lim(struct bq256xx_device *bq, int vindpm)
+int bq256xx_set_input_volt_lim(struct bq256xx_device *bq, int vindpm)
 {
 	unsigned int vindpm_reg_code;
 
@@ -850,7 +850,7 @@ static int bq256xx_set_input_volt_lim(struct bq256xx_device *bq, int vindpm)
 					BQ256XX_VINDPM_MASK, vindpm_reg_code);
 }
 
-static int bq256xx_get_input_curr_lim(struct bq256xx_device *bq)
+int bq256xx_get_input_curr_lim(struct bq256xx_device *bq)
 {
 	unsigned int input_current_limit;
 	unsigned int iindpm_reg_code;
@@ -867,7 +867,7 @@ static int bq256xx_get_input_curr_lim(struct bq256xx_device *bq)
 						BQ256XX_IINDPM_OFFSET_uA;
 }
 
-static int bq256xx_set_input_curr_lim(struct bq256xx_device *bq, int iindpm)
+int bq256xx_set_input_curr_lim(struct bq256xx_device *bq, int iindpm)
 {
 	unsigned int iindpm_reg_code;
 
@@ -880,13 +880,13 @@ static int bq256xx_set_input_curr_lim(struct bq256xx_device *bq, int iindpm)
 					BQ256XX_IINDPM_MASK, iindpm_reg_code);
 }
 
-static void bq256xx_charger_reset(struct bq256xx_device *bq)
+void bq256xx_charger_reset(struct bq256xx_device *bq)
 {
 	regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_PART_INFORMATION,
 					BQ256XX_REG_RST, BQ256XX_REG_RST);
 }
 
-static int bq256xx_hw_init(struct bq256xx_device *bq)
+int bq256xx_hw_init(struct bq256xx_device *bq)
 {
 	int wd_reg_val = BQ256XX_WATCHDOG_DIS;
 	int ret = 0;
@@ -904,6 +904,8 @@ static int bq256xx_hw_init(struct bq256xx_device *bq)
 	ret = regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_CHARGER_CONTROL_1,
 				 BQ256XX_WATCHDOG_MASK, wd_reg_val <<
 						BQ256XX_WDT_BIT_SHIFT);
+	if (ret)
+		return ret;
 
 	// ret = bq->chip_info->bq256xx_set_vindpm(bq, bq->init_data.vindpm);
 	// if (ret)
@@ -942,7 +944,7 @@ static int bq256xx_hw_init(struct bq256xx_device *bq)
 	return 0;
 }
 
-static int bq256xx_set_ship_mode(struct bq256xx_device *bq)
+int bq256xx_set_ship_mode(struct bq256xx_device *bq)
 {
 	int res;
 	res = regmap_update_bits(bq->i2c, bq->dev_addr, BQ256XX_INPUT_CURRENT_LIMIT,
