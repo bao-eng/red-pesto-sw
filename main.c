@@ -20,23 +20,28 @@ volatile bool acc_drdy_flag;
 volatile bool acc_wake_flag;
 volatile bool acc_sleep_flag;
 volatile bool bq_int_flag;
-volatile bool btn_int_flag;
+volatile bool btn_pressed_int_flag;
+volatile bool btn_released_int_flag;
 volatile bool process_cli_flag;
 volatile bool veml_read_flag;
 volatile bool led_on;
 
 bool cli_timer_callback(repeating_timer_t *rt);
 bool veml_timer_callback(repeating_timer_t *rt);
-int64_t alarm_callback(alarm_id_t id, void *user_data);
+int64_t sleep_alarm_callback(alarm_id_t id, void *user_data);
+int64_t button_alarm_callback(alarm_id_t id, void *user_data);
 void gpio_callback(uint gpio, uint32_t events);
 uint16_t get_led_pwm_adjusted(uint16_t als);
 
-alarm_id_t alarm_id;
+alarm_id_t sleep_alarm_id, button_alarm_id;
 
 int main() {
   stdio_init_all();
   red_pesto_init_cli();
   red_pesto_gpio_init(gpio_callback);
+  gpio_put(LED_GREEN_PIN, 1);
+  sleep_ms(500);
+  gpio_put(LED_GREEN_PIN, 0);
   red_pesto_lis2dh12_init();
   red_pesto_pwm_init();
   red_pesto_adc_init();
@@ -52,6 +57,7 @@ int main() {
   add_repeating_timer_ms(100, veml_timer_callback, NULL, &veml_timer);
 
   uint16_t als_val = 0;
+  // uint32_t t_pressed, t_released;
 
   while (1) {
     if(acc_drdy_flag){
@@ -70,23 +76,29 @@ int main() {
     }
     if(acc_wake_flag){
       DEBUG_PRINT("sleep->wake");
-      if(alarm_id) cancel_alarm(alarm_id);
+      if(sleep_alarm_id) cancel_alarm(sleep_alarm_id);
       led_on = true;
       pwm_set_gpio_level(LED_POWER_PIN, get_led_pwm_adjusted(als_val));
       acc_wake_flag = false;
     }
     if(acc_sleep_flag){
       DEBUG_PRINT("wake->sleep");
-      alarm_id = add_alarm_in_ms(10000, alarm_callback, NULL, false);
+      sleep_alarm_id = add_alarm_in_ms(10000, sleep_alarm_callback, NULL, false);
       acc_sleep_flag = false;
     }
     if(bq_int_flag){
       bq_int_handler();
       bq_int_flag = false;
     }
-    if(btn_int_flag){
-      DEBUG_PRINT("button interrupt!");
-      btn_int_flag = false;
+    if(btn_pressed_int_flag){
+      DEBUG_PRINT("button pressed!");
+      button_alarm_id = add_alarm_in_ms(10000, button_alarm_callback, NULL, false);
+      btn_pressed_int_flag = false;
+    }
+    if(btn_released_int_flag){
+      DEBUG_PRINT("button released!");
+      if(button_alarm_id) cancel_alarm(button_alarm_id);
+      btn_released_int_flag = false;
     }
     if(process_cli_flag){
       int tmp = getchar_timeout_us(0);
@@ -125,8 +137,12 @@ void gpio_callback(uint gpio, uint32_t events) {
   if (gpio == BQ_INT_PIN && events == GPIO_IRQ_EDGE_RISE) {
     bq_int_flag = true;
   }
-  if (gpio == BTN_PIN && events == GPIO_IRQ_EDGE_FALL) {
-    btn_int_flag = true;
+  if (gpio == BTN_PIN) {
+    if(events == GPIO_IRQ_EDGE_FALL) {
+      btn_pressed_int_flag = true;
+    }else if(events == GPIO_IRQ_EDGE_RISE) {
+      btn_released_int_flag = true;
+    }
   }
 }
 
@@ -146,8 +162,16 @@ uint16_t get_led_pwm_adjusted(uint16_t als){
   return res;
 }
 
-int64_t alarm_callback(alarm_id_t id, void *user_data) {
+int64_t sleep_alarm_callback(alarm_id_t id, void *user_data) {
   led_on = false;
   pwm_set_gpio_level(LED_POWER_PIN, 0);
+  return 0;
+}
+
+int64_t button_alarm_callback(alarm_id_t id, void *user_data) {
+  DEBUG_PRINT("Entering shipping mode");
+  gpio_put(LED_RED_PIN, 1);
+  busy_wait_ms(2000);
+  bq_enter_ship_mode();
   return 0;
 }

@@ -20,6 +20,10 @@ void red_pesto_gpio_init(gpio_irq_callback_t callback){
   gpio_set_dir(LED_GREEN_PIN, GPIO_OUT);
   gpio_put(LED_GREEN_PIN, 0);
 
+  gpio_init(LED_RED_PIN);
+  gpio_set_dir(LED_RED_PIN, GPIO_OUT);
+  gpio_put(LED_RED_PIN, 0);
+
   // Chip select is active-low, so we'll initialise it to a driven-high state
   gpio_init(SPI_CS_PIN);
   gpio_set_dir(SPI_CS_PIN, GPIO_OUT);
@@ -49,6 +53,6 @@ void red_pesto_gpio_init(gpio_irq_callback_t callback){
 
   gpio_init(BTN_PIN);
   gpio_set_dir(BTN_PIN, GPIO_IN);
-  gpio_set_irq_enabled_with_callback(BTN_PIN, GPIO_IRQ_EDGE_FALL, true,
+  gpio_set_irq_enabled_with_callback(BTN_PIN, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true,
                                       callback);
 }
