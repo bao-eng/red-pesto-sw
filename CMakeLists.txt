@@ -16,7 +16,6 @@ pico_sdk_init()
 add_executable(${PROJECT_NAME} 
     main.c
     src/board.h
-    src/common.h
     src/lis2dh12.h
     src/lis2dh12-pid/lis2dh12_reg.c
     src/lis2dh12-pid/lis2dh12_reg.h
@@ -27,6 +26,7 @@ add_executable(${PROJECT_NAME}
     src/i2c.h
     src/bq25619e.h
     src/cli.h
+    src/cli_bindings.h
     src/embedded_cli.h
     src/veml7700.h
 )

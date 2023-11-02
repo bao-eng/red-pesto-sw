@@ -2,7 +2,6 @@
 #include <string.h>
 
 #include "src/board.h"
-#include "src/common.h"
 #include "src/lis2dh12.h"
 #include "src/pwm.h"
 #include "src/gpio.h"
@@ -10,6 +9,7 @@
 #include "src/i2c.h"
 #include "src/bq25619e.h"
 #include "src/cli.h"
+#include "src/cli_bindings.h"
 #include "src/veml7700.h"
 
 #define MAX_LED_PWM 400.0f
@@ -38,6 +38,8 @@ alarm_id_t sleep_alarm_id, button_alarm_id;
 int main() {
   stdio_init_all();
   red_pesto_init_cli();
+  EmbeddedCli *cli = getCliPointer();
+  red_pesto_cli_bindings(cli);
   red_pesto_gpio_init(gpio_callback);
   gpio_put(LED_GREEN_PIN, 1);
   sleep_ms(500);

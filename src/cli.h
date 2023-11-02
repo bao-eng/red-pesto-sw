@@ -1,9 +1,6 @@
 #pragma once
 #include <stdarg.h>
 
-#include "pico/stdlib.h"
-#include "pico/bootrom.h"
-
 #define EMBEDDED_CLI_IMPL
 #include "embedded_cli.h"
 
@@ -11,17 +8,16 @@
 
 static EmbeddedCli *cli;
 
-static void writeCharToCli(EmbeddedCli *embeddedCli, char c) {
-    putchar_raw(c);
-}
+void red_pesto_init_cli();
+EmbeddedCli *getCliPointer();
+void cli_printf(const char *format, ...);
+static void writeCharToCli(EmbeddedCli *embeddedCli, char c);
 
-static void reboot2bootloader(EmbeddedCli *cli, char *args, void *context) {
-    reset_usb_boot(0, 0);
-}
-
-static void ship_mode(EmbeddedCli *cli, char *args, void *context) {
-    bq_enter_ship_mode();
-}
+#ifdef ENABLE_DEBUG_OUTPUT
+#  define DEBUG_PRINT(msg, ...) cli_printf("[DEBUG] [%6.6f] " msg, to_us_since_boot(get_absolute_time())/1000000.0f, ##__VA_ARGS__);
+#else
+#  define DEBUG_PRINT(msg, ...)
+#endif
 
 void red_pesto_init_cli(){
     cli = embeddedCliNewDefault();
@@ -29,26 +25,6 @@ void red_pesto_init_cli(){
     cli->writeChar = writeCharToCli;
     char c = (char)getchar_timeout_us(0);
     embeddedCliReceiveChar(cli, c);
-
-    CliCommandBinding dfu_binding =
-    {
-        "usb_boot",
-        "Reboot the device into BOOTSEL mode",
-        false,
-        NULL,
-        reboot2bootloader
-    };
-    embeddedCliAddBinding(cli, dfu_binding);
-
-    CliCommandBinding ship_binding =
-    {
-        "ship_mode",
-        "Put bq25619e charger into ship mode",
-        false,
-        NULL,
-        ship_mode
-    };
-    embeddedCliAddBinding(cli, ship_binding);
 }
 
 EmbeddedCli *getCliPointer() {
@@ -75,4 +51,8 @@ void cli_printf(const char *format, ...) {
 
     // Call embeddedCliPrint with the formatted string
     embeddedCliPrint(getCliPointer(), buffer);
+}
+
+static void writeCharToCli(EmbeddedCli *embeddedCli, char c) {
+    putchar_raw(c);
 }
