@@ -31,6 +31,8 @@
 
 	aliases {
 		watchdog0 = &wdt0;
+		veml7700-left = &veml7700_0;
+		veml7700-right = &veml7700_1;
 	};
 };
 
@@ -75,8 +77,25 @@
 &i2c0 {
 	clock-frequency = <I2C_BITRATE_STANDARD>;
 	status = "okay";
-	pinctrl-0 = <&i2c0_default>;
+	pinctrl-0 = <&i2c0_rp>;
 	pinctrl-names = "default";
+	veml7700_0: veml7700_0@10 {
+		compatible = "vishay,veml7700";
+		reg = <0x10>;
+		status = "okay";
+	};
+};
+
+&i2c1 {
+	clock-frequency = <I2C_BITRATE_STANDARD>;
+	status = "okay";
+	pinctrl-0 = <&i2c1_rp>;
+	pinctrl-names = "default";
+	veml7700_1: veml7700_1@10 {
+		compatible = "vishay,veml7700";
+		reg = <0x10>;
+		status = "okay";
+	};
 };
 
 &spi0 {

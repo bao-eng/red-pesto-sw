@@ -16,9 +16,17 @@
 		};
 	};
 
-	i2c0_default: i2c0_default {
+	i2c0_rp: i2c0_rp {
 		group1 {
-			pinmux = <I2C0_SDA_P4>, <I2C0_SCL_P5>;
+			pinmux = <I2C0_SDA_P24>, <I2C0_SCL_P25>;
+			input-enable;
+			input-schmitt-enable;
+		};
+	};
+
+	i2c1_rp: i2c1_rp {
+		group1 {
+			pinmux = <I2C1_SDA_P14>, <I2C1_SCL_P15>;
 			input-enable;
 			input-schmitt-enable;
 		};
