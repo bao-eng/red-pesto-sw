@@ -14,7 +14,7 @@
 #define SLEEP_TIME_MS   1000
 
 /* The devicetree node identifier for the "led0" alias. */
-// #define LED_GREEN_NODE DT_ALIAS(led_green)
+#define LED_GREEN_NODE DT_ALIAS(led_green)
 #define LED_RED_NODE DT_ALIAS(led_red)
 #define VEML7700_LEFT_NODE DT_ALIAS(veml7700_left)
 #define VEML7700_RIGHT_NODE DT_ALIAS(veml7700_right)
@@ -25,7 +25,7 @@
  * A build error on this line means your board is unsupported.
  * See the sample documentation for information on how to fix this.
  */
-// static const struct gpio_dt_spec led_green = GPIO_DT_SPEC_GET(LED_GREEN_NODE, gpios);
+static const struct gpio_dt_spec led_green = GPIO_DT_SPEC_GET(LED_GREEN_NODE, gpios);
 static const struct gpio_dt_spec led_red = GPIO_DT_SPEC_GET(LED_RED_NODE, gpios);
 const struct device *const veml7700_left = DEVICE_DT_GET(VEML7700_LEFT_NODE);
 const struct device *const veml7700_right = DEVICE_DT_GET(VEML7700_RIGHT_NODE);
@@ -36,20 +36,16 @@ int main(void)
 {
 	int ret;
 
-	if (!pwm_is_ready_dt(&pwm_led0)) {
-		printk("Error: PWM device %s is not ready\n",
-		       pwm_led0.dev->name);
+	ret = pwm_set_dt(&pwm_led0, PWM_KHZ(20), PWM_KHZ(20)/20U);
+		if (ret < 0) {
 		return 0;
 	}
 
-	ret = pwm_set_dt(&pwm_led0, PWM_KHZ(10), PWM_KHZ(10)/10U);
+	if (!gpio_is_ready_dt(&led_green) || !gpio_is_ready_dt(&led_red)) {
+		return 0;
+	}
 
-
-	// if (!gpio_is_ready_dt(&led_green) || !gpio_is_ready_dt(&led_red)) {
-	// 	return 0;
-	// }
-
-	// ret = gpio_pin_configure_dt(&led_green, GPIO_OUTPUT_ACTIVE);
+	ret = gpio_pin_configure_dt(&led_green, GPIO_OUTPUT_ACTIVE);
 	ret = gpio_pin_configure_dt(&led_red, GPIO_OUTPUT_INACTIVE);
 	if (ret < 0) {
 		return 0;
@@ -69,8 +65,8 @@ int main(void)
 		printk("LIS2DH: %.2f %.2f %.2f\n", accel[0].val1 + accel[0].val2*0.000001,
 			accel[1].val1 + accel[1].val2*0.000001,
 			accel[2].val1 + accel[2].val2*0.000001);
-		// ret = gpio_pin_toggle_dt(&led_green);
-		// ret = gpio_pin_toggle_dt(&led_red);
+		ret = gpio_pin_toggle_dt(&led_green);
+		ret = gpio_pin_toggle_dt(&led_red);
 		if (ret < 0) {
 			return 0;
 		}

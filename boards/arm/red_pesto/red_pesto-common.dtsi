@@ -134,10 +134,10 @@ zephyr_udc0: &usbd {
 
 &pwm {
 	status = "okay";
-	pinctrl-0 = <&pwm_ch1a_default>;//<&pwm_ch6b_default>;
+	pinctrl-0 = <&pwm_ch6b_default>;
 	pinctrl-names = "default";
-	divider-frac-1 = <0>;
-	divider-int-1 = <16>;
+	divider-frac-6 = <0>;
+	divider-int-6 = <16>;
 };
 
 &vreg {
