@@ -23,7 +23,7 @@
 #define LIS2DH_NODE DT_NODELABEL(lis2dh)
 #define PWM_LED_NODE DT_ALIAS(pwm_led0)
 #define VBAT_DIVIDER_NODE DT_NODELABEL(vbatt)
-
+#define SW0_NODE DT_ALIAS(sw0)
 
 /*
  * A build error on this line means your board is unsupported.
@@ -38,6 +38,13 @@ static const struct pwm_dt_spec pwm_led0 = PWM_DT_SPEC_GET(PWM_LED_NODE);
 static const struct voltage_divider_dt_spec adc_vbat = VOLTAGE_DIVIDER_DT_SPEC_GET(VBAT_DIVIDER_NODE);
 static const struct adc_dt_spec adc_cc1 = ADC_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), 0);
 static const struct adc_dt_spec adc_cc2 = ADC_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), 1);
+static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET_OR(SW0_NODE, gpios, {0});
+static struct gpio_callback button_cb_data;
+
+void button_pressed(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
+{
+	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
+}
 
 int meas_adc_v(const struct adc_dt_spec *spec, int32_t *v)
 {
@@ -93,6 +100,11 @@ int main(void)
 	if (ret < 0) {
 		return 0;
 	}
+
+	ret = gpio_pin_configure_dt(&button, GPIO_INPUT);
+	ret = gpio_pin_interrupt_configure_dt(&button, GPIO_INT_EDGE_TO_ACTIVE);
+	gpio_init_callback(&button_cb_data, button_pressed, BIT(button.pin));
+	gpio_add_callback(button.port, &button_cb_data);
 
 	ret = adc_channel_setup_dt(&adc_vbat.port);
 	ret = adc_channel_setup_dt(&adc_cc1);

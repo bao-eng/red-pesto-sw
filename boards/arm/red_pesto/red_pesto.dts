@@ -51,6 +51,7 @@
 		led-green = &led_green;
 		led-red = &led_red;
 		pwm-led0 = &pwm_led0;
+		sw0 = &button0;
 	};
 
 	zephyr,user {
