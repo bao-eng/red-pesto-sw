@@ -40,9 +40,20 @@
 		};
 	};
 
+	vbatt: vbatt {
+		compatible = "voltage-divider";
+		io-channels = <&adc 2>;
+		output-ohms = <16000>;
+		full-ohms = <(15000 + 16000)>;
+	};
+
 	aliases {
 		led-green = &led_green;
 		led-red = &led_red;
 		pwm-led0 = &pwm_led0;
+	};
+
+	zephyr,user {
+		io-channels = <&adc 0>, <&adc 1>;
 	};
 };

@@ -9,17 +9,21 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/drivers/pwm.h>
+#include <zephyr/drivers/adc.h>
+#include <zephyr/drivers/adc/voltage_divider.h>
 
 /* 1000 msec = 1 sec */
 #define SLEEP_TIME_MS   1000
 
-/* The devicetree node identifier for the "led0" alias. */
+/* The devicetree node identifiers*/
 #define LED_GREEN_NODE DT_ALIAS(led_green)
 #define LED_RED_NODE DT_ALIAS(led_red)
 #define VEML7700_LEFT_NODE DT_ALIAS(veml7700_left)
 #define VEML7700_RIGHT_NODE DT_ALIAS(veml7700_right)
 #define LIS2DH_NODE DT_NODELABEL(lis2dh)
 #define PWM_LED_NODE DT_ALIAS(pwm_led0)
+#define VBAT_DIVIDER_NODE DT_NODELABEL(vbatt)
+
 
 /*
  * A build error on this line means your board is unsupported.
@@ -31,6 +35,46 @@ const struct device *const veml7700_left = DEVICE_DT_GET(VEML7700_LEFT_NODE);
 const struct device *const veml7700_right = DEVICE_DT_GET(VEML7700_RIGHT_NODE);
 const struct device *const lis2dh = DEVICE_DT_GET(LIS2DH_NODE);
 static const struct pwm_dt_spec pwm_led0 = PWM_DT_SPEC_GET(PWM_LED_NODE);
+static const struct voltage_divider_dt_spec adc_vbat = VOLTAGE_DIVIDER_DT_SPEC_GET(VBAT_DIVIDER_NODE);
+static const struct adc_dt_spec adc_cc1 = ADC_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), 0);
+static const struct adc_dt_spec adc_cc2 = ADC_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), 1);
+
+int meas_adc_v(const struct adc_dt_spec *spec, int32_t *v)
+{
+	int ret;
+	int32_t sample_buffer = 0;
+
+	/* Structure defining an ADC sampling sequence */
+	struct adc_sequence sequence = {
+		.buffer = &sample_buffer,
+		/* buffer size in bytes, not number of samples */
+		.buffer_size = sizeof(sample_buffer),
+		// .calibrate = true,
+	};
+	adc_sequence_init_dt(spec, &sequence);
+
+	ret = adc_read_dt(spec, &sequence);
+	if (ret != 0) {
+		return ret;
+	}
+	*v = sample_buffer;
+	ret = adc_raw_to_millivolts_dt(spec, v);
+	if (ret != 0) {
+		return ret;
+	}
+	return 0;
+}
+
+int meas_vbat_v(const struct voltage_divider_dt_spec *spec, int32_t *v)
+{
+	int ret;
+	meas_adc_v(&spec->port, v);
+	ret = voltage_divider_scale_dt(spec, v);
+	if (ret != 0) {
+		return ret;
+	}
+	return 0;
+}
 
 int main(void)
 {
@@ -51,9 +95,20 @@ int main(void)
 		return 0;
 	}
 
+	ret = adc_channel_setup_dt(&adc_vbat.port);
+	ret = adc_channel_setup_dt(&adc_cc1);
+	ret = adc_channel_setup_dt(&adc_cc2);
+
 	struct sensor_value val;
 	struct sensor_value accel[3];
+	int32_t bat_volt, cc1_volt, cc2_volt;
 	while (1) {
+		meas_vbat_v(&adc_vbat, &bat_volt);
+		printk("VBAT: %" PRId32 "mV\n", bat_volt);
+		meas_adc_v(&adc_cc1, &cc1_volt);
+		printk("CC1: %" PRId32 "mV\n", cc1_volt);
+		meas_adc_v(&adc_cc2, &cc2_volt);
+		printk("CC2: %" PRId32 "mV\n", cc2_volt);
 		ret = sensor_sample_fetch(veml7700_left);
 		ret = sensor_channel_get(veml7700_left, SENSOR_CHAN_LIGHT, &val);
 		printk("VEML770-Left: %d\n", val.val1);
