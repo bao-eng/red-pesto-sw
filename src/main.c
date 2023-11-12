@@ -49,7 +49,6 @@ int meas_adc_v(const struct adc_dt_spec *spec, int32_t *v)
 		.buffer = &sample_buffer,
 		/* buffer size in bytes, not number of samples */
 		.buffer_size = sizeof(sample_buffer),
-		// .calibrate = true,
 	};
 	adc_sequence_init_dt(spec, &sequence);
 
@@ -65,7 +64,7 @@ int meas_adc_v(const struct adc_dt_spec *spec, int32_t *v)
 	return 0;
 }
 
-int meas_vbat_v(const struct voltage_divider_dt_spec *spec, int32_t *v)
+int meas_divider_v(const struct voltage_divider_dt_spec *spec, int32_t *v)
 {
 	int ret;
 	meas_adc_v(&spec->port, v);
@@ -103,7 +102,7 @@ int main(void)
 	struct sensor_value accel[3];
 	int32_t bat_volt, cc1_volt, cc2_volt;
 	while (1) {
-		meas_vbat_v(&adc_vbat, &bat_volt);
+		meas_divider_v(&adc_vbat, &bat_volt);
 		printk("VBAT: %" PRId32 "mV\n", bat_volt);
 		meas_adc_v(&adc_cc1, &cc1_volt);
 		printk("CC1: %" PRId32 "mV\n", cc1_volt);
